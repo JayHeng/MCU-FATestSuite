@@ -1,2 +1,2 @@
-# NXP-MCUTestSuite
-A one-stop test tool based on Python2.7+wxPython4.0, it can do all kinds of typical performance tests for NXP MCU (i.MXRT...) | 恩智浦MCU性能测试一站式工具，助你轻松获得一系列性能测试结果（core benchmark, power consumption, io speed, memory stability...）
+# MCU-FATestSuite
+A flexible FAT tool based on Python3.7+PyQt5.15, it can do flexible FA tests for NXP MCU (i.MXRT...) | 恩智浦MCU板卡出厂验收测试(FAT)一站式工具 
