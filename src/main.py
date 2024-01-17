@@ -23,7 +23,7 @@ class faTesterMain(uicore.faTesterUi):
         self.menuHelpAction_revisionHistory.triggered.connect(self.callbackShowRevisionHistory)
         self.comboBox_mcuDevice.currentIndexChanged.connect(self.callbackSetMcuDevice)
         self.pushButton_open.clicked.connect(self.callbackOpenUart)
-        self.pushButton_clearScreen.clicked.connect(self.clearContentOfScreens)
+        self.pushButton_resetTestResult.clicked.connect(self.callbackResetTestResult)
 
     def _setupMcuTargets( self ):
         self.setTargetSetupValue()

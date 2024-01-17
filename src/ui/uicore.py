@@ -148,5 +148,5 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def showContentOnMainPrintWin( self, contentStr ):
         self.textEdit_printWin.append(contentStr)
 
-    def clearContentOfScreens( self ):
+    def callbackResetTestResult( self ):
         self.textEdit_printWin.clear()

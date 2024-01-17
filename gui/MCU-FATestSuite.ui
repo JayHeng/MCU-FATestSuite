@@ -125,7 +125,7 @@
       </property>
      </item>
     </widget>
-    <widget class="QPushButton" name="pushButton_testCaseDetect">
+    <widget class="QPushButton" name="pushButton_detectTestCases">
      <property name="geometry">
       <rect>
        <x>50</x>
@@ -141,10 +141,10 @@
       </font>
      </property>
      <property name="text">
-      <string>Test Case Detect</string>
+      <string>Detect Test Cases</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_testCaseRun">
+    <widget class="QPushButton" name="pushButton_runTestCases">
      <property name="geometry">
       <rect>
        <x>50</x>
@@ -160,10 +160,10 @@
       </font>
      </property>
      <property name="text">
-      <string>Test Case Run</string>
+      <string>Run Test Cases</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_clearScreen">
+    <widget class="QPushButton" name="pushButton_resetTestResult">
      <property name="geometry">
       <rect>
        <x>50</x>
@@ -179,7 +179,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Clear Screen</string>
+      <string>Reset Test Result</string>
      </property>
     </widget>
    </widget>
