@@ -117,6 +117,8 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def _loadTestCases( self ):
         global s_testCaseResultDict
         if os.path.isfile(self.loaderExe):
+            self.pushButton_runTestCases.setText('Running Test Cases...')
+            self.pushButton_runTestCases.setStyleSheet("background-color: yellow")
             global s_recvPrintBuffer
             s_recvPrintBuffer = ""
             s_serialPort.reset_input_buffer()
@@ -133,7 +135,7 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                 sp = self._getVal32FromByteArray(initialAppBytes[0:4])
                 pc = self._getVal32FromByteArray(initialAppBytes[4:8])
                 self._debugger.JumpToApp(self.fwAppFiles[i], sp, pc)
-                self.showContentOnMainPrintWin('---------New Case----------')
+                self.showContentOnMainPrintWin('---------Case ' + str(i+1) + ' / ' + str(len(self.fwAppFiles)) + '----------')
                 while True:
                     res0 = s_recvPrintBuffer.find(kFAT_FW_START, lastBeg)
                     if (res0 != -1):
@@ -144,14 +146,17 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                             if (res1 != -1):
                                 lastBeg = res1
                                 s_testCaseResultDict[filename] = True
-                                self.showContentOnMainResWin('(PASS) -- ' + filename)
+                                self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                 break
                             if (res2 != -1):
                                 lastBeg = res2
                                 s_testCaseResultDict[filename] = False
-                                self.showContentOnMainResWin('(FAIL) -- ' + filename)
+                                self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                 break
                         break
+                time.sleep(0.5)
+            self.pushButton_runTestCases.setText('Run Test Cases')
+            self.pushButton_runTestCases.setStyleSheet("background-color: white")
         else:
             self.showInfoMessage('Error', 'You need to set Loader EXE first.')
 
@@ -237,7 +242,7 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             s_serialPort.close()
             self.uartRecvThread.quit()
             self.pushButton_open.setText('Open')
-            self.pushButton_open.setStyleSheet("background-color: grey")
+            self.pushButton_open.setStyleSheet("background-color: white")
 
     def receiveUartData( self ):
         if s_serialPort.isOpen():
