@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>995</width>
+    <width>764</width>
     <height>419</height>
    </rect>
   </property>
@@ -329,7 +329,7 @@
      <rect>
       <x>260</x>
       <y>10</y>
-      <width>721</width>
+      <width>491</width>
       <height>361</height>
      </rect>
     </property>
@@ -344,7 +344,7 @@
       <rect>
        <x>10</x>
        <y>330</y>
-       <width>701</width>
+       <width>471</width>
        <height>20</height>
       </rect>
      </property>
@@ -352,28 +352,51 @@
       <number>100</number>
      </property>
     </widget>
-    <widget class="QTextEdit" name="textEdit_printWin">
-     <property name="geometry">
-      <rect>
-       <x>540</x>
-       <y>10</y>
-       <width>171</width>
-       <height>311</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QGroupBox" name="groupBox_testResult">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>521</width>
+       <width>271</width>
        <height>311</height>
       </rect>
      </property>
      <property name="title">
-      <string>Test Result</string>
+      <string>Case Test Result</string>
      </property>
+     <widget class="QTextEdit" name="textEdit_resWin">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>251</width>
+        <height>281</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_recvLog">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>10</y>
+       <width>191</width>
+       <height>311</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Recv Log from COM Port</string>
+     </property>
+     <widget class="QTextEdit" name="textEdit_printWin">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>171</width>
+        <height>281</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
@@ -382,7 +405,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>995</width>
+     <width>764</width>
      <height>21</height>
     </rect>
    </property>

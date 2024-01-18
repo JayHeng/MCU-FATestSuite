@@ -13,12 +13,6 @@ import bincopy
 import serial.tools.list_ports
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
-
-import matplotlib
-matplotlib.use("Qt5Agg")
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
 from . import uidef
 from . import uivar
 from . import uilang
@@ -50,46 +44,6 @@ class uartRecvWorker(QThread):
             self.sinOut.emit()
             self.sleep(s_recvInterval)
 
-class resultFigure(FigureCanvas):
-
-    def __init__(self,width=5, height=4, dpi=100):
-        self.fig = Figure(figsize=(width, height), dpi=dpi)
-        super(resultFigure,self).__init__(self.fig)
-        global s_testCaseResultDict
-        if (False):
-            s_testCaseResultDict = {"app_fc0_uart":None,
-                                    "app_xspi0":None,
-                                    "app_xspi1":True,
-                                    "app_xspi2":False,
-                                    "app_usdhc0":None,
-                                    "app_usdhc1":True,
-                                    "app_mipi_dsi":False,
-                                    "app_sai0":None,
-                                    "app_sai2":True,
-                                    "app_sai3":False,
-                                    }
-
-        ncol = 3
-        nrow = int(len(s_testCaseResultDict) / ncol) + 1
-
-        axs = (self.fig).add_gridspec(1 + nrow, ncol, wspace=.5).subplots()
-        for ax in axs.flat:
-            ax.set_axis_off()
-
-        if len(s_testCaseResultDict) == 0:
-            return
-
-        for ax, (caseName, caseResult) in zip(axs[1:, :].T.flat, s_testCaseResultDict.items()):
-            if caseResult == None:
-                fcolor = "w"
-            elif caseResult == True:
-                fcolor = "c"
-            elif caseResult == False:
-                fcolor = "r"
-            ax.text(.2, .5, caseName, bbox=dict(boxstyle='round', fc=fcolor, ec="k"),
-                    transform=ax.transAxes, size="large", color="tab:blue",
-                    horizontalalignment="left", verticalalignment="center")
-
 class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def __init__(self, parent=None):
@@ -97,7 +51,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.setupUi(self)
         self.uartRecvThread = uartRecvWorker()
         self.uartRecvThread.sinOut.connect(self.receiveUartData)
-
         self.exeBinRoot = os.getcwd()
         self.exeTopRoot = os.path.dirname(self.exeBinRoot)
         exeMainFile = os.path.join(self.exeTopRoot, 'src', 'main.py')
@@ -107,15 +60,12 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         uivar.initVar(os.path.join(self.exeTopRoot, 'bin', 'fat_settings.json'))
         toolCommDict = uivar.getAdvancedSettings(uidef.kAdvancedSettings_Tool)
         self.toolCommDict = toolCommDict.copy()
-
         self.mcuDevice = None
         self.testCaseLoader = None
         self.loaderExe = None
         self._initTargetSetupValue()
         self.setTargetSetupValue()
         self.initUi()
-
-        self.resultGridlayout = QGridLayout(self.groupBox_testResult)
         self.fwAppFiles = []
         self.isLoadTestCasesTaskPending = False
 
@@ -158,7 +108,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         if len(fwAppFiles) == 0:
             self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
         else:
-            self.updateMainResultWin()
             self.pushButton_detectTestCases.setStyleSheet("background-color: green")
 
     def _getVal32FromByteArray( self, binarray, offset=0):
@@ -194,12 +143,13 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                             if (res1 != -1):
                                 lastBeg = res1
                                 s_testCaseResultDict[filename] = True
+                                self.showContentOnMainResWin('(PASS) -- ' + filename)
                                 break
                             if (res2 != -1):
                                 lastBeg = res2
                                 s_testCaseResultDict[filename] = False
+                                self.showContentOnMainResWin('(FAIL) -- ' + filename)
                                 break
-                        #self.updateMainResultWin()
                         break
         else:
             self.showInfoMessage('Error', 'You need to set Loader EXE first.')
@@ -301,19 +251,14 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def showContentOnMainPrintWin( self, contentStr ):
         self.textEdit_printWin.append(contentStr)
 
-    def updateMainResultWin( self ):
-        self.resultFig = resultFigure(width=6, height=4, dpi=80)
-        try:
-            self.resultGridlayout.removeWidget(self.resultFig,0,0)
-        except:
-            pass
-        self.resultGridlayout.addWidget(self.resultFig,0,0)
+    def showContentOnMainResWin( self, contentStr ):
+        self.textEdit_resWin.append(contentStr)
 
     def resetTestResult( self ):
         global s_testCaseResultDict
         if len(s_testCaseResultDict) != 0:
             for key in s_testCaseResultDict.keys():
                 s_testCaseResultDict[key] = None
-            self.updateMainResultWin()
+        self.textEdit_resWin.clear()
         self.textEdit_printWin.clear()
 
