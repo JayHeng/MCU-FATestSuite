@@ -9,9 +9,11 @@ from . import uicore
 from . import uidef
 from . import uivar
 from . import uilang
+from . import debugger_utils
 
 __all__ = ["uicore",
             "uidef",
             "uivar",
-            "uilang"]
+            "uilang",
+            "debugger_utils"]
 
