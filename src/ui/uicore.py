@@ -120,7 +120,8 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             global s_recvPrintBuffer
             s_recvPrintBuffer = ""
             s_serialPort.reset_input_buffer()
-            self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe)
+            jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'ui', 'debuggers', 'jlink')
+            self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe, jlinkcmdFolderPath)
             self._debugger.open()
             lastBeg = 0
             for i in range(len(self.fwAppFiles)):

@@ -71,9 +71,10 @@ class JLinkDebugger(Debugger):
         self.interface = args[1]
         self.speed = str(args[2])
         self.jlinkDir = os.path.expandvars(args[3])
+        self.jlinkcmdPath = args[4]
         self.quitCommand = 'q'
         self.argsList = [self.jlinkDir, '-device', self.core, '-if', self.interface, '-speed', self.speed]
-        self.commandPath = os.path.join(os.path.dirname(__file__), 'debuggers', 'jlink', 'jlink_temporary_cmd.jlink')
+        self.commandPath = os.path.join(self.jlinkcmdPath, 'jlink_temporary_cmd.jlink')
 
     ##
     # @brief
