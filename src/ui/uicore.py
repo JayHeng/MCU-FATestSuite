@@ -107,13 +107,14 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.toolCommDict = toolCommDict.copy()
 
         self.mcuDevice = None
+        self.testCaseLoader = None
+        self.loaderExe = None
         self._initTargetSetupValue()
         self.setTargetSetupValue()
         self.initUi()
 
         self.resultGridlayout = QGridLayout(self.groupBox_testResult)
         self.fwAppFiles = []
-        self.debuggerDir = None
         self.isLoadTestCasesTaskPending = False
 
     def initUi( self ):
@@ -123,9 +124,10 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def selectLoaderExe( self ):
         fileName,fileType = QtWidgets.QFileDialog.getOpenFileName(self, "Select EXE", os.getcwd(), "All Files(*);;EXE Files(*.exe)")
-        self.debuggerDir = fileName
+        self.loaderExe = fileName
         try:
-            if os.path.isfile(self.debuggerDir):
+            if os.path.isfile(self.loaderExe):
+                self.toolCommDict['loaderExe'] = self.loaderExe
                 self.pushButton_setLoaderExe.setStyleSheet("background-color: green")
             else:
                 self.pushButton_setLoaderExe.setStyleSheet("background-color: grey")
@@ -155,12 +157,16 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
         else:
             self.updateMainResultWin()
+            self.pushButton_detectTestCases.setStyleSheet("background-color: green")
 
     def _loadTestCases( self ):
         global s_testCaseResultDict
-        self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_CM33_0', 'SWD', 4000, self.debuggerDir)
-        self._debugger.open()
-        self._debugger.JumpToApp(self.fwAppFiles[0], 0x20200000, 0x00083035)
+        if os.path.isfile(self.loaderExe):
+            self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe)
+            self._debugger.open()
+            self._debugger.JumpToApp(self.fwAppFiles[0], 0x20200000, 0x00083035)
+        else:
+            self.showInfoMessage('Error', 'You need to set Loader EXE first.')
 
     def task_loadTestCases( self ):
         while True:  
@@ -202,10 +208,16 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.comboBox_mcuDevice.clear()
         self.comboBox_mcuDevice.addItems(uidef.kMcuDevice_v1_0)
         self.comboBox_mcuDevice.setCurrentIndex(self.toolCommDict['mcuDevice'])
+        self.comboBox_testCaseLoader.setCurrentIndex(self.toolCommDict['testCaseLoader'])
+        if self.toolCommDict['loaderExe'] != None and os.path.isfile(self.toolCommDict['loaderExe']):
+            self.loaderExe = self.toolCommDict['loaderExe']
+            self.pushButton_setLoaderExe.setStyleSheet("background-color: green")
 
     def setTargetSetupValue( self ):
         self.mcuDevice = self.comboBox_mcuDevice.currentText()
         self.toolCommDict['mcuDevice'] = self.comboBox_mcuDevice.currentIndex()
+        self.testCaseLoader = self.comboBox_testCaseLoader.currentText()
+        self.toolCommDict['testCaseLoader'] = self.comboBox_testCaseLoader.currentIndex()
 
     def updatePortSetupValue( self ):
         self.uartComPort = self.comboBox_comPort.currentText()
