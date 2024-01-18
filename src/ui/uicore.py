@@ -28,6 +28,8 @@ from win import faTesterWin
 s_serialPort = serial.Serial()
 s_recvInterval = 1
 
+s_testCaseResultDict = {}
+
 class uartRecvWorker(QThread):
     sinOut = pyqtSignal()
 
@@ -48,27 +50,31 @@ class resultFigure(FigureCanvas):
     def __init__(self,width=5, height=4, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         super(resultFigure,self).__init__(self.fig)
-
-        results = {"app_fc0_uart":None,
-                   "app_xspi0":None,
-                   "app_xspi1":True,
-                   "app_xspi2":False,
-                   "app_usdhc0":None,
-                   "app_usdhc1":True,
-                   "app_mipi_dsi":False,
-                   "app_sai0":None,
-                   "app_sai2":True,
-                   "app_sai3":False,
-        }
+        global s_testCaseResultDict
+        if (False):
+            s_testCaseResultDict = {"app_fc0_uart":None,
+                                    "app_xspi0":None,
+                                    "app_xspi1":True,
+                                    "app_xspi2":False,
+                                    "app_usdhc0":None,
+                                    "app_usdhc1":True,
+                                    "app_mipi_dsi":False,
+                                    "app_sai0":None,
+                                    "app_sai2":True,
+                                    "app_sai3":False,
+                                    }
 
         ncol = 3
-        nrow = 5
+        nrow = int(len(s_testCaseResultDict) / ncol) + 1
 
         axs = (self.fig).add_gridspec(1 + nrow, ncol, wspace=.5).subplots()
         for ax in axs.flat:
             ax.set_axis_off()
 
-        for ax, (caseName, caseResult) in zip(axs[1:, :].T.flat, results.items()):
+        if len(s_testCaseResultDict) == 0:
+            return
+
+        for ax, (caseName, caseResult) in zip(axs[1:, :].T.flat, s_testCaseResultDict.items()):
             if caseResult == None:
                 fcolor = "w"
             elif caseResult == True:
@@ -102,12 +108,37 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.setTargetSetupValue()
         self.initUi()
 
-        self.updateMainResultWin()
+        self.resultGridlayout = QGridLayout(self.groupBox_testResult)
+        self.fwAppFiles = []
 
     def initUi( self ):
         self.uartComPort = None
         self.uartBaudrate = None
         self.setPortSetupValue()
+
+    def findTestCases( self ):
+        #appFolderPath = self.m_dirPicker_appFolderPath.GetPath()
+        #self.sbAppFolderPath = appFolderPath.encode('utf-8').encode("gbk")
+        global s_testCaseResultDict
+        s_testCaseResultDict.clear()
+        fwAppFiles = []
+        cpu = None
+        if self.mcuDevice == uidef.kMcuDevice_iMXRT700:
+            cpu = "MIMXRT798"
+        else:
+            pass
+        fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', cpu)
+        files = os.listdir(fwFolderPath)
+        for file in files:
+            filename, filetype = os.path.splitext(file)
+            if filetype == '.srec':
+                fwAppFiles.append(os.path.join(fwFolderPath, file))
+                s_testCaseResultDict[filename] = None
+        self.fwAppFiles = fwAppFiles[:]
+        if len(fwAppFiles) == 0:
+            self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
+        else:
+            self.updateMainResultWin()
 
     def showAboutMessage( self, myTitle, myContent):
         QMessageBox.about(self, myTitle, myContent )
@@ -193,8 +224,17 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def updateMainResultWin( self ):
         self.resultFig = resultFigure(width=6, height=4, dpi=80)
-        self.resultGridlayout = QGridLayout(self.groupBox_testResult)
+        try:
+            self.resultGridlayout.removeWidget(self.resultFig,0,0)
+        except:
+            pass
         self.resultGridlayout.addWidget(self.resultFig,0,0)
 
-    def callbackResetTestResult( self ):
+    def resetTestResult( self ):
+        global s_testCaseResultDict
+        if len(s_testCaseResultDict) != 0:
+            for key in s_testCaseResultDict.keys():
+                s_testCaseResultDict[key] = None
+            self.updateMainResultWin()
         self.textEdit_printWin.clear()
+

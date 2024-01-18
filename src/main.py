@@ -22,8 +22,9 @@ class faTesterMain(uicore.faTesterUi):
         self.menuHelpAction_aboutAuthor.triggered.connect(self.callbackShowAboutAuthor)
         self.menuHelpAction_revisionHistory.triggered.connect(self.callbackShowRevisionHistory)
         self.comboBox_mcuDevice.currentIndexChanged.connect(self.callbackSetMcuDevice)
-        self.pushButton_open.clicked.connect(self.callbackOpenUart)
+        self.pushButton_detectTestCases.clicked.connect(self.callbackDetectTestCases)
         self.pushButton_resetTestResult.clicked.connect(self.callbackResetTestResult)
+        self.pushButton_open.clicked.connect(self.callbackOpenUart)
 
     def _setupMcuTargets( self ):
         self.setTargetSetupValue()
@@ -31,6 +32,12 @@ class faTesterMain(uicore.faTesterUi):
 
     def callbackSetMcuDevice( self ):
         self._setupMcuTargets()
+
+    def callbackDetectTestCases( self ):
+        self.findTestCases()
+
+    def callbackResetTestResult( self ):
+        self.resetTestResult()
 
     def callbackOpenUart( self ):
         if not self.isUartOpened:
