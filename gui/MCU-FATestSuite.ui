@@ -336,10 +336,10 @@
     <widget class="QTextEdit" name="textEdit_printWin">
      <property name="geometry">
       <rect>
-       <x>10</x>
-       <y>230</y>
-       <width>701</width>
-       <height>71</height>
+       <x>540</x>
+       <y>10</y>
+       <width>171</width>
+       <height>291</height>
       </rect>
      </property>
     </widget>
@@ -348,8 +348,8 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>701</width>
-       <height>211</height>
+       <width>521</width>
+       <height>291</height>
       </rect>
      </property>
      <property name="title">
