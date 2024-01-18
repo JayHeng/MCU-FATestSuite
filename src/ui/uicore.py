@@ -8,6 +8,7 @@
 
 import sys
 import os
+import time
 import serial.tools.list_ports
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import *
@@ -111,6 +112,8 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.resultGridlayout = QGridLayout(self.groupBox_testResult)
         self.fwAppFiles = []
 
+        self.isLoadTestCasesTaskPending = False
+
     def initUi( self ):
         self.uartComPort = None
         self.uartBaudrate = None
@@ -139,6 +142,16 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
         else:
             self.updateMainResultWin()
+
+    def _loadTestCases( self ):
+        pass
+
+    def task_loadTestCases( self ):
+        while True:  
+            if self.isLoadTestCasesTaskPending:
+                self._loadTestCases()
+                self.isLoadTestCasesTaskPending = False
+            time.sleep(1)
 
     def showAboutMessage( self, myTitle, myContent):
         QMessageBox.about(self, myTitle, myContent )
