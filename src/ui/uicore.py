@@ -14,6 +14,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+import matplotlib
+matplotlib.use("Qt5Agg")
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
 from . import uidef
 from . import uivar
 from . import uilang
@@ -38,6 +43,42 @@ class uartRecvWorker(QThread):
             self.sinOut.emit()
             self.sleep(s_recvInterval)
 
+class resultFigure(FigureCanvas):
+
+    def __init__(self,width=5, height=4, dpi=100):
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        super(resultFigure,self).__init__(self.fig)
+
+        results = {"app_fc0_uart":None,
+                   "app_xspi0":None,
+                   "app_xspi1":True,
+                   "app_xspi2":False,
+                   "app_usdhc0":None,
+                   "app_usdhc1":True,
+                   "app_mipi_dsi":False,
+                   "app_sai0":None,
+                   "app_sai2":True,
+                   "app_sai3":False,
+        }
+
+        ncol = 3
+        nrow = 5
+
+        axs = (self.fig).add_gridspec(1 + nrow, ncol, wspace=.5).subplots()
+        for ax in axs.flat:
+            ax.set_axis_off()
+
+        for ax, (caseName, caseResult) in zip(axs[1:, :].T.flat, results.items()):
+            if caseResult == None:
+                fcolor = "w"
+            elif caseResult == True:
+                fcolor = "c"
+            elif caseResult == False:
+                fcolor = "r"
+            ax.text(.2, .5, caseName, bbox=dict(boxstyle='round', fc=fcolor, ec="k"),
+                    transform=ax.transAxes, size="large", color="tab:blue",
+                    horizontalalignment="left", verticalalignment="center")
+
 class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def __init__(self, parent=None):
@@ -60,6 +101,8 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self._initTargetSetupValue()
         self.setTargetSetupValue()
         self.initUi()
+
+        self.updateMainResultWin()
 
     def initUi( self ):
         self.uartComPort = None
@@ -147,6 +190,11 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def showContentOnMainPrintWin( self, contentStr ):
         self.textEdit_printWin.append(contentStr)
+
+    def updateMainResultWin( self ):
+        self.resultFig = resultFigure(width=6, height=4, dpi=80)
+        self.resultGridlayout = QGridLayout(self.groupBox_testResult)
+        self.resultGridlayout.addWidget(self.resultFig,0,0)
 
     def callbackResetTestResult( self ):
         self.textEdit_printWin.clear()
