@@ -9,6 +9,7 @@
 import sys
 import os
 import time
+import bincopy
 import serial.tools.list_ports
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
@@ -159,12 +160,22 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             self.updateMainResultWin()
             self.pushButton_detectTestCases.setStyleSheet("background-color: green")
 
+    def _getVal32FromByteArray( self, binarray, offset=0):
+        val32Vaule = ((binarray[3+offset]<<24) + (binarray[2+offset]<<16) + (binarray[1+offset]<<8) + binarray[0+offset])
+        return val32Vaule
+
     def _loadTestCases( self ):
         global s_testCaseResultDict
         if os.path.isfile(self.loaderExe):
             self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe)
             self._debugger.open()
-            self._debugger.JumpToApp(self.fwAppFiles[0], 0x20200000, 0x00083035)
+            for i in range(len(self.fwAppFiles)):
+                srecObj = bincopy.BinFile(str(self.fwAppFiles[i]))
+                startAddress = srecObj.minimum_address
+                initialAppBytes = srecObj.as_binary(startAddress, startAddress + 8)
+                sp = self._getVal32FromByteArray(initialAppBytes[0:4])
+                pc = self._getVal32FromByteArray(initialAppBytes[4:8])
+                self._debugger.JumpToApp(self.fwAppFiles[i], sp, pc)
         else:
             self.showInfoMessage('Error', 'You need to set Loader EXE first.')
 
