@@ -13,9 +13,6 @@ import bincopy
 import serial.tools.list_ports
 from PyQt5 import QtWidgets
 from PyQt5.Qt import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 
 import matplotlib
 matplotlib.use("Qt5Agg")
@@ -31,8 +28,12 @@ from win import faTesterWin
 
 s_serialPort = serial.Serial()
 s_recvInterval = 1
-
+s_recvPrintBuffer = ""
 s_testCaseResultDict = {}
+
+kFAT_FW_START = 'FAT FW Start'
+kFAT_FW_PASS  = 'FAT FW Pass'
+kFAT_FW_FAIL  = 'FAT FW Fail'
 
 class uartRecvWorker(QThread):
     sinOut = pyqtSignal()
@@ -167,15 +168,39 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def _loadTestCases( self ):
         global s_testCaseResultDict
         if os.path.isfile(self.loaderExe):
+            global s_recvPrintBuffer
+            s_recvPrintBuffer = ""
+            s_serialPort.reset_input_buffer()
             self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe)
             self._debugger.open()
+            lastBeg = 0
             for i in range(len(self.fwAppFiles)):
                 srecObj = bincopy.BinFile(str(self.fwAppFiles[i]))
+                filepath, file = os.path.split(self.fwAppFiles[i])
+                filename, filetype = os.path.splitext(file)
                 startAddress = srecObj.minimum_address
                 initialAppBytes = srecObj.as_binary(startAddress, startAddress + 8)
                 sp = self._getVal32FromByteArray(initialAppBytes[0:4])
                 pc = self._getVal32FromByteArray(initialAppBytes[4:8])
                 self._debugger.JumpToApp(self.fwAppFiles[i], sp, pc)
+                self.showContentOnMainPrintWin('---------New Case----------')
+                while True:
+                    res0 = s_recvPrintBuffer.find(kFAT_FW_START, lastBeg)
+                    if (res0 != -1):
+                        lastBeg = res0
+                        while True:
+                            res1 = s_recvPrintBuffer.find(kFAT_FW_PASS, lastBeg)
+                            res2 = s_recvPrintBuffer.find(kFAT_FW_FAIL, lastBeg)
+                            if (res1 != -1):
+                                lastBeg = res1
+                                s_testCaseResultDict[filename] = True
+                                break
+                            if (res2 != -1):
+                                lastBeg = res2
+                                s_testCaseResultDict[filename] = False
+                                break
+                        #self.updateMainResultWin()
+                        break
         else:
             self.showInfoMessage('Error', 'You need to set Loader EXE first.')
 
@@ -267,8 +292,10 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         if s_serialPort.isOpen():
             num = s_serialPort.inWaiting()
             if num != 0:
+                global s_recvPrintBuffer
                 data = s_serialPort.read(num)
                 string = data.decode()
+                s_recvPrintBuffer += string
                 self.showContentOnMainPrintWin(string)
 
     def showContentOnMainPrintWin( self, contentStr ):
