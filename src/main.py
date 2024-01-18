@@ -39,6 +39,7 @@ class faTesterMain(uicore.faTesterUi):
         self.menuHelpAction_aboutAuthor.triggered.connect(self.callbackShowAboutAuthor)
         self.menuHelpAction_revisionHistory.triggered.connect(self.callbackShowRevisionHistory)
         self.comboBox_mcuDevice.currentIndexChanged.connect(self.callbackSetMcuDevice)
+        self.pushButton_setLoaderExe.clicked.connect(self.callbackSetLoaderExe)
         self.pushButton_detectTestCases.clicked.connect(self.callbackDetectTestCases)
         self.pushButton_runTestCases.clicked.connect(self.callbackRunTestCases)
         self.pushButton_resetTestResult.clicked.connect(self.callbackResetTestResult)
@@ -50,6 +51,9 @@ class faTesterMain(uicore.faTesterUi):
 
     def callbackSetMcuDevice( self ):
         self._setupMcuTargets()
+
+    def callbackSetLoaderExe( self ):
+        self.selectLoaderExe()
 
     def callbackDetectTestCases( self ):
         self.findTestCases()

@@ -10,6 +10,7 @@ import sys
 import os
 import time
 import serial.tools.list_ports
+from PyQt5 import QtWidgets
 from PyQt5.Qt import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -23,6 +24,7 @@ from matplotlib.figure import Figure
 from . import uidef
 from . import uivar
 from . import uilang
+from . import debugger_utils
 sys.path.append(os.path.abspath(".."))
 from win import faTesterWin
 
@@ -111,13 +113,24 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
         self.resultGridlayout = QGridLayout(self.groupBox_testResult)
         self.fwAppFiles = []
-
+        self.debuggerDir = None
         self.isLoadTestCasesTaskPending = False
 
     def initUi( self ):
         self.uartComPort = None
         self.uartBaudrate = None
         self.setPortSetupValue()
+
+    def selectLoaderExe( self ):
+        fileName,fileType = QtWidgets.QFileDialog.getOpenFileName(self, "Select EXE", os.getcwd(), "All Files(*);;EXE Files(*.exe)")
+        self.debuggerDir = fileName
+        try:
+            if os.path.isfile(self.debuggerDir):
+                self.pushButton_setLoaderExe.setStyleSheet("background-color: green")
+            else:
+                self.pushButton_setLoaderExe.setStyleSheet("background-color: grey")
+        except:
+            pass
 
     def findTestCases( self ):
         #appFolderPath = self.m_dirPicker_appFolderPath.GetPath()
@@ -144,7 +157,10 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             self.updateMainResultWin()
 
     def _loadTestCases( self ):
-        pass
+        global s_testCaseResultDict
+        self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_CM33_0', 'SWD', 4000, self.debuggerDir)
+        self._debugger.open()
+        self._debugger.JumpToApp(self.fwAppFiles[0], 0x20200000, 0x00083035)
 
     def task_loadTestCases( self ):
         while True:  
