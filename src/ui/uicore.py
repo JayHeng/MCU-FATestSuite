@@ -23,7 +23,6 @@ from win import faTesterWin
 s_serialPort = serial.Serial()
 s_recvInterval = 1
 s_recvPrintBuffer = ""
-s_testCaseResultDict = {}
 
 kFAT_FW_START = 'FAT FW Start'
 kFAT_FW_PASS  = 'FAT FW Pass'
@@ -89,8 +88,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def findTestCases( self ):
         #appFolderPath = self.m_dirPicker_appFolderPath.GetPath()
         #self.sbAppFolderPath = appFolderPath.encode('utf-8').encode("gbk")
-        global s_testCaseResultDict
-        s_testCaseResultDict.clear()
         fwAppFiles = []
         cpu = None
         if self.mcuDevice == uidef.kMcuDevice_iMXRT700:
@@ -103,7 +100,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             filename, filetype = os.path.splitext(file)
             if filetype == '.srec':
                 fwAppFiles.append(os.path.join(fwFolderPath, file))
-                s_testCaseResultDict[filename] = None
         self.fwAppFiles = fwAppFiles[:]
         if len(fwAppFiles) == 0:
             self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
@@ -115,7 +111,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         return val32Vaule
 
     def _loadTestCases( self ):
-        global s_testCaseResultDict
         if os.path.isfile(self.loaderExe):
             self.pushButton_runTestCases.setText('Running Test Cases...')
             self.pushButton_runTestCases.setStyleSheet("background-color: yellow")
@@ -145,12 +140,10 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                             res2 = s_recvPrintBuffer.find(kFAT_FW_FAIL, lastBeg)
                             if (res1 != -1):
                                 lastBeg = res1
-                                s_testCaseResultDict[filename] = True
                                 self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                 break
                             if (res2 != -1):
                                 lastBeg = res2
-                                s_testCaseResultDict[filename] = False
                                 self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                 break
                         break
@@ -261,10 +254,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.textEdit_resWin.append(contentStr)
 
     def resetTestResult( self ):
-        global s_testCaseResultDict
-        if len(s_testCaseResultDict) != 0:
-            for key in s_testCaseResultDict.keys():
-                s_testCaseResultDict[key] = None
         self.textEdit_resWin.clear()
         self.textEdit_printWin.clear()
 
