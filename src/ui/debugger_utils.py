@@ -15,6 +15,8 @@ import subprocess
 kDebuggerType_JLink = 'jlink'
 kDebuggerType_Mbed  = 'mbed'
 
+kMCU_REGISTER_ADDR = 0x50062FE0
+
 ##
 # @brief Create a debugger instance
 #
@@ -51,12 +53,6 @@ class Debugger:
     def close(self):
         pass
 
-    ##
-    # @brief Reset the target.
-    #
-    def reset(self):
-        pass
-
 ##
 # @brief JLink debugger class.
 #
@@ -75,6 +71,20 @@ class JLinkDebugger(Debugger):
         self.quitCommand = 'q'
         self.argsList = [self.jlinkDir, '-device', self.core, '-if', self.interface, '-speed', self.speed]
         self.commandPath = os.path.join(self.jlinkcmdPath, 'jlink_temporary_cmd.jlink')
+
+    ##
+    # @brief Convert str to hex.
+    #
+    def getHexByte(self, str):
+        if str[0].isdigit():
+            hex = (ord(str[0]) - ord('0')) << 4
+        else:
+            hex = (ord(str[0]) - ord('A') + 10) << 4
+        if str[1].isdigit():
+            hex += ord(str[1]) - ord('0')
+        else:
+            hex += ord(str[1]) - ord('A') + 10
+        return hex
 
     ##
     # @brief
@@ -109,15 +119,64 @@ class JLinkDebugger(Debugger):
     #
     def reset(self):
         """Reset the target"""
-        commandPath = os.path.join(os.path.dirname(__file__), 'debuggers', 'jlink', 'reset.jlink')
-        argsList = self.argsList
-        argsList.extend(['-CommandFile', commandPath])
-        args = ' '.join(argsList)
+        status = True
+        # Prepare cmd and arg
+        commandArgs = []
+        args = 'r' + '\r\n' + 'h'
+        commandArgs = self.getJlinkCmdArg(args)
+        # Execute the command.
         try:
-            subprocess.call(args)
-            # process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        except OSError:
-            print('\nReset Error.\n')
+            process = subprocess.Popen(commandArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        except Exception as e:
+            print("Unknown exception: %s" % e)
+            status = False
+        #self.deleteJlinkCmdFile()
+
+        return status
+
+    ##
+    # @brief Read the memory.
+    #
+    def readMem32(self, addr=kMCU_REGISTER_ADDR):
+        """Read the memory"""
+        status = True
+        # Prepare cmd and arg
+        numItems = 0x1
+        memCmd = 'mem32'
+        commandArgs = []
+        args = memCmd + ' ' + ("0x%x" %addr) + ' ' + ("0x%x" %numItems) + '\r\n' + 'q'
+        commandArgs = self.getJlinkCmdArg(args)
+        # Execute the command.
+        hexResult = 0
+        try:
+            process = subprocess.Popen(commandArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            #print 'commandOutput:', commandOutputs
+            commandOutputs = process.communicate()[0]
+            # Parse result (no sure about the case type of addr returned by jlink)
+            hexAddr = "%08x" % addr   # Address must be 8 digits
+            addrIndex = commandOutputs.find(hexAddr.upper())
+            if addrIndex == -1:
+                addrIndex = commandOutputs.find(hexAddr.lower())
+            if addrIndex != -1:
+                resOffset = addrIndex + 11
+                strResult = commandOutputs[resOffset:resOffset+2]
+                hexResult = self.getHexByte(strResult)
+                strResult = commandOutputs[resOffset+2:resOffset+4]
+                hexResult = (hexResult << 8) + self.getHexByte(strResult)
+                strResult = commandOutputs[resOffset+4:resOffset+6]
+                hexResult = (hexResult << 8) + self.getHexByte(strResult)
+                strResult = commandOutputs[resOffset+6:resOffset+8]
+                hexResult = (hexResult << 8) + self.getHexByte(strResult)
+            else:
+                status = False
+        except Exception as e:
+            print("Unknown exception: %s" % e)
+            status = False
+
+        self.deleteJlinkCmdFile()
+
+        time.sleep(0.5)
+        return status, hexResult
 
     ##
     # @brief Jump to app.
