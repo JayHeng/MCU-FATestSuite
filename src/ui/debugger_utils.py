@@ -187,7 +187,7 @@ class JLinkDebugger(Debugger):
         commandArgs = []
         sp = "%08x" % sp   # must be 8 digits
         pc = "%08x" % pc   # must be 8 digits
-        args = 'r' + '\r\n' + 'h' + '\r\n' + 'LoadFile ' + fwFile + '\r\n' + 'wreg MSP ' + sp + '\r\n' + 'wreg PSP ' + sp + '\r\n' + 'SetPC ' + pc + '\r\n' + 'g'
+        args = 'r' + '\r\n' + 'h' + '\r\n' + 'LoadFile ' + fwFile + '\r\n' + 'wreg MSP ' + sp + '\r\n' + 'wreg PSP ' + sp + '\r\n' + 'SetPC ' + pc + '\r\n' + 'g' + '\r\n' + 'q'
         commandArgs = self.getJlinkCmdArg(args)
         # Execute the command.
         try:
