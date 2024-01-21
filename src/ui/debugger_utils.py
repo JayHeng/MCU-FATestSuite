@@ -150,8 +150,8 @@ class JLinkDebugger(Debugger):
         hexResult = 0
         try:
             process = subprocess.Popen(commandArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            #print 'commandOutput:', commandOutputs
-            commandOutputs = process.communicate()[0]
+            commandOutputs = str(process.communicate()[0])
+            #print('commandOutput:', commandOutputs)
             # Parse result (no sure about the case type of addr returned by jlink)
             hexAddr = "%08x" % addr   # Address must be 8 digits
             addrIndex = commandOutputs.find(hexAddr.upper())
@@ -181,13 +181,19 @@ class JLinkDebugger(Debugger):
     ##
     # @brief Jump to app.
     #
-    def JumpToApp(self, fwFile, sp, pc):
+    def JumpToApp(self, fwFile, sp, pc, addr=kMCU_REGISTER_ADDR):
         status = True
+        if addr != None:
+            addr = "0x%08x" % addr
+            reg = "0x%x" % 0
+            w4Arg = 'w4 ' + addr + ' ' + reg + '\r\n'
+        else:
+            w4Arg = ''
         # Prepare cmd and arg
         commandArgs = []
         sp = "%08x" % sp   # must be 8 digits
         pc = "%08x" % pc   # must be 8 digits
-        args = 'r' + '\r\n' + 'h' + '\r\n' + 'LoadFile ' + fwFile + '\r\n' + 'wreg MSP ' + sp + '\r\n' + 'wreg PSP ' + sp + '\r\n' + 'SetPC ' + pc + '\r\n' + 'g' + '\r\n' + 'q'
+        args = 'r' + '\r\n' + 'h' + '\r\n' + w4Arg + 'LoadFile ' + fwFile + '\r\n' + 'wreg MSP ' + sp + '\r\n' + 'wreg PSP ' + sp + '\r\n' + 'SetPC ' + pc + '\r\n' + 'g' + '\r\n' + 'q'
         commandArgs = self.getJlinkCmdArg(args)
         # Execute the command.
         try:
