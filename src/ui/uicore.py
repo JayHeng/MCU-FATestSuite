@@ -364,15 +364,20 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             if lineIdx == None:
                 pass
             elif lineIdx == 0:
-                self.lineEdit_resWin_0.setText(text)
+                #self.lineEdit_resWin_0.setText(text)
+                self.label_resWin_0.setText(text)
             elif lineIdx == 1:
-                self.lineEdit_resWin_1.setText(text)
+                #self.lineEdit_resWin_1.setText(text)
+                self.label_resWin_1.setText(text)
             elif lineIdx == 2:
-                self.lineEdit_resWin_2.setText(text)
+                #self.lineEdit_resWin_2.setText(text)
+                self.label_resWin_2.setText(text)
             elif lineIdx == 3:
-                self.lineEdit_resWin_3.setText(text)
+                #self.lineEdit_resWin_3.setText(text)
+                self.label_resWin_3.setText(text)
             elif lineIdx == 4:
-                self.lineEdit_resWin_4.setText(text)
+                #self.lineEdit_resWin_4.setText(text)
+                self.label_resWin_4.setText(text)
             elif lineIdx == 5:
                 self.lineEdit_resWin_5.setText(text)
             elif lineIdx == 6:
@@ -395,11 +400,17 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def resetTestResult( self ):
         if RES_TEXT_TYPE_IS_LINE:
-            self.lineEdit_resWin_0.clear()
-            self.lineEdit_resWin_1.clear()
-            self.lineEdit_resWin_2.clear()
-            self.lineEdit_resWin_3.clear()
-            self.lineEdit_resWin_4.clear()
+            #self.lineEdit_resWin_0.clear()
+            self.label_resWin_0.clear()
+            #self.lineEdit_resWin_1.clear()
+            self.label_resWin_1.clear()
+            #self.lineEdit_resWin_2.clear()
+            self.label_resWin_2.clear()
+            #self.lineEdit_resWin_3.clear()
+            self.label_resWin_3.clear()
+            #self.lineEdit_resWin_4.clear()
+            self.label_resWin_4.clear()
+
             self.lineEdit_resWin_5.clear()
             self.lineEdit_resWin_6.clear()
             self.lineEdit_resWin_7.clear()
