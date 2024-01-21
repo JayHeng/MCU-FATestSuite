@@ -22,7 +22,10 @@ from win import faTesterWin
 
 s_serialPort = serial.Serial()
 s_recvInterval = 1
-s_recvPrintBuffer = ""
+s_recvPrintBuf = ""
+s_isPrintUpdated = False
+s_caseResInfo = ""
+s_isResInfoUpdated = False
 
 kFAT_LOG_START = 'FAT FW Start'
 kFAT_LOG_PASS  = 'FAT FW Pass'
@@ -48,6 +51,41 @@ class uartRecvWorker(QThread):
             self.sinOut.emit()
             self.sleep(s_recvInterval)
 
+class uartLogWorker(QThread):
+    sinOut = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.infoLen = 0
+
+    def run(self):
+        while True:
+            try:
+                global s_isPrintUpdated
+                if s_isPrintUpdated:
+                    self.sinOut.emit(s_recvPrintBuf)
+                    s_isPrintUpdated = False
+            except IOError as e:
+                pass
+            QThread.msleep(100)
+
+class resLogWorker(QThread):
+    sinOut = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+        while True:
+            try:
+                global s_isResInfoUpdated
+                if s_isResInfoUpdated:
+                    self.sinOut.emit(s_caseResInfo)
+                    s_isResInfoUpdated = False
+            except IOError as e:
+                pass
+            QThread.msleep(100)
+
 class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def __init__(self, parent=None):
@@ -55,6 +93,14 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.setupUi(self)
         self.uartRecvThread = uartRecvWorker()
         self.uartRecvThread.sinOut.connect(self.thread_receiveUartData)
+
+        self.uartLogThread = uartLogWorker()
+        self.uartLogThread.sinOut.connect(self.textEdit_printWin.setText)
+        self.uartLogThread.start()
+        self.resLogThread = resLogWorker()
+        self.resLogThread.sinOut.connect(self.textEdit_resWin.setText)
+        self.resLogThread.start()
+
         self.exeBinRoot = os.getcwd()
         self.exeTopRoot = os.path.dirname(self.exeBinRoot)
         exeMainFile = os.path.join(self.exeTopRoot, 'src', 'main.py')
@@ -153,10 +199,10 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         if s_serialPort.isOpen():
             num = s_serialPort.inWaiting()
             if num != 0:
-                global s_recvPrintBuffer
+                global s_recvPrintBuf
                 data = s_serialPort.read(num)
                 string = data.decode()
-                s_recvPrintBuffer += string
+                s_recvPrintBuf += string
                 self.showContentOnMainPrintWin(string)
 
     def selectLoaderExe( self ):
@@ -193,6 +239,8 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         if len(fwAppFiles) == 0:
             self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
         else:
+            global s_caseResInfo
+            s_caseResInfo = caseTestResultMsg
             self.showContentOnMainResWin(caseTestResultMsg)
             self.pushButton_detectTestCases.setStyleSheet("background-color: green")
 
@@ -204,8 +252,10 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         if os.path.isfile(self.loaderExe):
             #self.resetTestResult()
             self.pushButton_runTestCases.setStyleSheet("background-color: yellow")
-            global s_recvPrintBuffer
-            s_recvPrintBuffer = ""
+            global s_recvPrintBuf
+            global s_caseResInfo
+            s_recvPrintBuf = ""
+            s_caseResInfo = ""
             s_serialPort.reset_input_buffer()
             jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'ui', 'debuggers', 'jlink')
             self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe, jlinkcmdFolderPath)
@@ -213,8 +263,9 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             lastBeg = 0
             appLen = len(self.fwAppFiles)
             for appIdx in range(appLen):
-                self.pushButton_runTestCases.setText('Running Test Case ' + str(appIdx+1) + ' / ' + str(appLen))
-                self.showContentOnMainPrintWin('---------Case ' + str(appIdx+1) + ' / ' + str(appLen) + '----------')
+                self.pushButton_runTestCases.setText('Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
+                s_recvPrintBuf += '\n---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n'
+                self.showContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------')
                 srecObj = bincopy.BinFile(str(self.fwAppFiles[appIdx]))
                 filepath, file = os.path.split(self.fwAppFiles[appIdx])
                 filename, filetype = os.path.splitext(file)
@@ -227,20 +278,22 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
                     deltaTimeStart = time.perf_counter()
                     while True:
-                        res0 = s_recvPrintBuffer.find(kFAT_LOG_START, lastBeg)
+                        res0 = s_recvPrintBuf.find(kFAT_LOG_START, lastBeg)
                         ##############################################################
                         if (res0 != -1):
                             appIsLoaded = True
                             lastBeg = res0
                             while True:
-                                res1 = s_recvPrintBuffer.find(kFAT_LOG_PASS, lastBeg)
-                                res2 = s_recvPrintBuffer.find(kFAT_LOG_FAIL, lastBeg)
+                                res1 = s_recvPrintBuf.find(kFAT_LOG_PASS, lastBeg)
+                                res2 = s_recvPrintBuf.find(kFAT_LOG_FAIL, lastBeg)
                                 if (res1 != -1):
                                     lastBeg = res1
+                                    s_caseResInfo += '( PASS ) -- ' + filename + '\n'
                                     self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
+                                    s_caseResInfo += '( FAIL ) -- ' + filename + '\n'
                                     self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                     break
                                 time.sleep(0.5)
@@ -254,9 +307,11 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                                 if status:
                                     resx = resx >> 24
                                     if resx == kFAT_REG_PASS:
+                                        s_caseResInfo += '( PASS ) -- ' + filename + '\n'
                                         self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                         break
                                     elif resx == kFAT_REG_FAIL:
+                                        s_caseResInfo += '( FAIL ) -- ' + filename + '\n'
                                         self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                         break
                                 time.sleep(0.5)
@@ -281,11 +336,19 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             time.sleep(1)
 
     def showContentOnMainPrintWin( self, contentStr ):
-        self.textEdit_printWin.append(contentStr)
+        global s_isPrintUpdated
+        s_isPrintUpdated = True
+        while (s_isPrintUpdated):
+            pass
+        #self.textEdit_printWin.append(contentStr)
         pass
 
     def showContentOnMainResWin( self, contentStr ):
-        self.textEdit_resWin.append(contentStr)
+        global s_isResInfoUpdated
+        s_isResInfoUpdated = True
+        while (s_isResInfoUpdated):
+            pass
+        #self.textEdit_resWin.append(contentStr)
         pass
 
     def resetTestResult( self ):
