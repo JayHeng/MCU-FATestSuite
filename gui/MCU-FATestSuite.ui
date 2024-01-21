@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>764</width>
-    <height>419</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>10</x>
       <y>10</y>
       <width>241</width>
-      <height>231</height>
+      <height>261</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -57,9 +57,9 @@
     <widget class="QComboBox" name="comboBox_mcuDevice">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>90</x>
        <y>10</y>
-       <width>101</width>
+       <width>141</width>
        <height>22</height>
       </rect>
      </property>
@@ -75,11 +75,11 @@
       </property>
      </item>
     </widget>
-    <widget class="QLabel" name="label_testCaseLoader">
+    <widget class="QLabel" name="label_testLoader">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>70</y>
        <width>111</width>
        <height>16</height>
       </rect>
@@ -91,15 +91,15 @@
       </font>
      </property>
      <property name="text">
-      <string>Test Case Loader:</string>
+      <string>Test Loader:</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_testCaseLoader">
+    <widget class="QComboBox" name="comboBox_testLoader">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>40</y>
-       <width>101</width>
+       <x>90</x>
+       <y>70</y>
+       <width>141</width>
        <height>22</height>
       </rect>
      </property>
@@ -129,7 +129,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>110</y>
+       <y>140</y>
        <width>141</width>
        <height>31</height>
       </rect>
@@ -148,7 +148,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>150</y>
+       <y>180</y>
        <width>141</width>
        <height>31</height>
       </rect>
@@ -167,7 +167,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>190</y>
+       <y>220</y>
        <width>141</width>
        <height>31</height>
       </rect>
@@ -186,7 +186,7 @@
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>70</y>
+       <y>100</y>
        <width>141</width>
        <height>31</height>
       </rect>
@@ -201,12 +201,52 @@
       <string>Set Loader EXE</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="comboBox_mcuBoard">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>40</y>
+       <width>141</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="currentText">
+      <string>FOWLP324-EVK_Rev.A</string>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>FOWLP324-EVK_Rev.A</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_mcuBoard">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>MCU Board:</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="uartFrame">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>280</y>
       <width>241</width>
       <height>121</height>
      </rect>
@@ -330,7 +370,7 @@
       <x>260</x>
       <y>10</y>
       <width>491</width>
-      <height>361</height>
+      <height>391</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -343,7 +383,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>330</y>
+       <y>360</y>
        <width>471</width>
        <height>20</height>
       </rect>
@@ -358,7 +398,7 @@
        <x>10</x>
        <y>10</y>
        <width>271</width>
-       <height>311</height>
+       <height>341</height>
       </rect>
      </property>
      <property name="title">
@@ -370,7 +410,7 @@
         <x>10</x>
         <y>20</y>
         <width>251</width>
-        <height>281</height>
+        <height>311</height>
        </rect>
       </property>
      </widget>
@@ -381,7 +421,7 @@
        <x>290</x>
        <y>10</y>
        <width>191</width>
-       <height>311</height>
+       <height>341</height>
       </rect>
      </property>
      <property name="title">
@@ -393,7 +433,7 @@
         <x>10</x>
         <y>20</y>
         <width>171</width>
-        <height>281</height>
+        <height>311</height>
        </rect>
       </property>
      </widget>

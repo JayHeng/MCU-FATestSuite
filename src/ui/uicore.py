@@ -111,7 +111,7 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         toolCommDict = uivar.getAdvancedSettings(uidef.kAdvancedSettings_Tool)
         self.toolCommDict = toolCommDict.copy()
         self.mcuDevice = None
-        self.testCaseLoader = None
+        self.testLoader = None
         self.loaderExe = None
         self._initTargetSetupValue()
         self.setTargetSetupValue()
@@ -151,7 +151,7 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.comboBox_mcuDevice.clear()
         self.comboBox_mcuDevice.addItems(uidef.kMcuDevice_v1_0)
         self.comboBox_mcuDevice.setCurrentIndex(self.toolCommDict['mcuDevice'])
-        self.comboBox_testCaseLoader.setCurrentIndex(self.toolCommDict['testCaseLoader'])
+        self.comboBox_testLoader.setCurrentIndex(self.toolCommDict['testLoader'])
         if self.toolCommDict['loaderExe'] != None and os.path.isfile(self.toolCommDict['loaderExe']):
             self.loaderExe = self.toolCommDict['loaderExe']
             self.pushButton_setLoaderExe.setStyleSheet("background-color: green")
@@ -159,8 +159,8 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def setTargetSetupValue( self ):
         self.mcuDevice = self.comboBox_mcuDevice.currentText()
         self.toolCommDict['mcuDevice'] = self.comboBox_mcuDevice.currentIndex()
-        self.testCaseLoader = self.comboBox_testCaseLoader.currentText()
-        self.toolCommDict['testCaseLoader'] = self.comboBox_testCaseLoader.currentIndex()
+        self.testLoader = self.comboBox_testLoader.currentText()
+        self.toolCommDict['testLoader'] = self.comboBox_testLoader.currentIndex()
 
     def updatePortSetupValue( self ):
         self.uartComPort = self.comboBox_comPort.currentText()
