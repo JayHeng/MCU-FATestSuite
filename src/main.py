@@ -1,12 +1,14 @@
 #! /usr/bin/env python
 # -*- coding: UTF-8 -*-
+import wx
 import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import os
 import time
 import threading
 import inspect
 import ctypes
-from PyQt5.Qt import *
 from ui import uidef
 from ui import uilang
 from ui import uivar
@@ -14,6 +16,7 @@ from ui import uicore
 
 g_main_win = None
 g_task_loadTestCases = None
+g_task_receiveUartData = None
 
 def _async_raise(tid, exctype):
     tid = ctypes.c_long(tid)
@@ -29,42 +32,29 @@ def _async_raise(tid, exctype):
 class faTesterMain(uicore.faTesterUi):
 
     def __init__(self, parent=None):
-        super(faTesterMain, self).__init__(parent)
-        self._register_callbacks()
+        uicore.faTesterUi.__init__(self, parent)
         self.isUartOpened = False
-        self._setupMcuTargets()
-
-    def _register_callbacks(self):
-        self.menuHelpAction_homePage.triggered.connect(self.callbackShowHomePage)
-        self.menuHelpAction_aboutAuthor.triggered.connect(self.callbackShowAboutAuthor)
-        self.menuHelpAction_revisionHistory.triggered.connect(self.callbackShowRevisionHistory)
-        self.comboBox_mcuDevice.currentIndexChanged.connect(self.callbackSetMcuDevice)
-        self.pushButton_setLoaderExe.clicked.connect(self.callbackSetLoaderExe)
-        self.pushButton_detectTestCases.clicked.connect(self.callbackDetectTestCases)
-        self.pushButton_runTestCases.clicked.connect(self.callbackRunTestCases)
-        self.pushButton_resetTestResult.clicked.connect(self.callbackResetTestResult)
-        self.pushButton_open.clicked.connect(self.callbackOpenUart)
 
     def _setupMcuTargets( self ):
         self.setTargetSetupValue()
         self.initUi()
 
-    def callbackSetMcuDevice( self ):
+    def callbackSetMcuDevice( self, event ):
         self._setupMcuTargets()
 
-    def callbackSetLoaderExe( self ):
+    def callbackSetLoaderExe( self, event ):
         self.selectLoaderExe()
 
-    def callbackDetectTestCases( self ):
+    def callbackDetectTestCases( self, event ):
         self.findTestCases()
 
-    def callbackRunTestCases( self ):
+    def callbackRunTestCases( self, event ):
         self.isLoadTestCasesTaskPending = True
 
-    def callbackResetTestResult( self ):
+    def callbackResetTestResult( self, event ):
         self.resetTestResult()
 
-    def callbackOpenUart( self ):
+    def callbackOpenUart( self, event ):
         if not self.isUartOpened:
             self.updatePortSetupValue()
             self.openUartPort()
@@ -81,37 +71,47 @@ class faTesterMain(uicore.faTesterUi):
         uivar.setAdvancedSettings(uidef.kAdvancedSettings_Tool, self.toolCommDict)
         uivar.deinitVar()
         self._stopTask(g_task_loadTestCases)
+        self._stopTask(g_task_receiveUartData)
         try:
             self.Destroy()
         except:
             pass
 
-    def closeEvent(self, event):
+    def callbackExit( self, event ):
         self._deinitToolToExit()
-        event.accept()
 
-    def callbackShowHomePage(self):
-        self.showAboutMessage(uilang.kMsgLanguageContentDict['homePage_title'][0], uilang.kMsgLanguageContentDict['homePage_info'][0] )
+    def callbackClose( self, event ):
+        self._deinitToolToExit()
 
-    def callbackShowAboutAuthor(self):
+    def callbackShowHomePage( self, event ):
+        msgText = ((uilang.kMsgLanguageContentDict['homePage_info'][0]))
+        wx.MessageBox(msgText, uilang.kMsgLanguageContentDict['homePage_title'][0], wx.OK | wx.ICON_INFORMATION)
+
+    def callbackShowAboutAuthor( self, event ):
         msgText = ((uilang.kMsgLanguageContentDict['aboutAuthor_author'][0]) +
                    (uilang.kMsgLanguageContentDict['aboutAuthor_email1'][0]) +
                    (uilang.kMsgLanguageContentDict['aboutAuthor_email2'][0]) +
                    (uilang.kMsgLanguageContentDict['aboutAuthor_blog'][0]))
-        self.showAboutMessage(uilang.kMsgLanguageContentDict['aboutAuthor_title'][0], msgText )
+        wx.MessageBox(msgText, uilang.kMsgLanguageContentDict['aboutAuthor_title'][0], wx.OK | wx.ICON_INFORMATION)
 
-    def callbackShowRevisionHistory(self):
-        self.showAboutMessage(uilang.kMsgLanguageContentDict['revisionHistory_title'][0], uilang.kMsgLanguageContentDict['revisionHistory_v0_1_0'][0] )
+    def callbackShowRevisionHistory( self, event ):
+        msgText = ((uilang.kMsgLanguageContentDict['revisionHistory_v0_1_0'][0]))
+        wx.MessageBox(msgText, uilang.kMsgLanguageContentDict['revisionHistory_title'][self.languageIndex], wx.OK | wx.ICON_INFORMATION)
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = wx.App()
+
     g_main_win = faTesterMain(None)
-    g_main_win.setWindowTitle(u"MCU FA Test Suite v0.1")
-    g_main_win.show()
+    g_main_win.SetTitle(u"MCU FA Test Suite v0.1")
+    g_main_win.Show()
 
     g_task_loadTestCases = threading.Thread(target=g_main_win.task_loadTestCases)
     g_task_loadTestCases.setDaemon(True)
     g_task_loadTestCases.start()
 
-    sys.exit(app.exec_())
+    g_task_receiveUartData = threading.Thread(target=g_main_win.task_receiveUartData)
+    g_task_receiveUartData.setDaemon(True)
+    g_task_receiveUartData.start()
+
+    app.MainLoop()
 
