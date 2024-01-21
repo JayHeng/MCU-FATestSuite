@@ -24,9 +24,9 @@ s_serialPort = serial.Serial()
 s_recvInterval = 1
 s_recvPrintBuffer = ""
 
-kFAT_FW_START = 'FAT FW Start'
-kFAT_FW_PASS  = 'FAT FW Pass'
-kFAT_FW_FAIL  = 'FAT FW Fail'
+kFAT_LOG_START = 'FAT FW Start'
+kFAT_LOG_PASS  = 'FAT FW Pass'
+kFAT_LOG_FAIL  = 'FAT FW Fail'
 
 kFAT_REG_ADDR  = 0x50062FE0
 kFAT_REG_START = 0x5A
@@ -224,54 +224,49 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                 pc = self._getVal32FromByteArray(initialAppBytes[4:8])
                 appIsLoaded = False
                 while (not appIsLoaded):
-                    self.showContentOnMainPrintWin('---------Load fw once')
-                    self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc)
+                    self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
                     deltaTimeStart = time.perf_counter()
                     while True:
+                        res0 = s_recvPrintBuffer.find(kFAT_LOG_START, lastBeg)
                         ##############################################################
-                        if True:
-                            res0 = s_recvPrintBuffer.find(kFAT_FW_START, lastBeg)
-                            if (res0 != -1):
-                                appIsLoaded = True
-                                lastBeg = res0
-                                while True:
-                                    res1 = s_recvPrintBuffer.find(kFAT_FW_PASS, lastBeg)
-                                    res2 = s_recvPrintBuffer.find(kFAT_FW_FAIL, lastBeg)
-                                    if (res1 != -1):
-                                        lastBeg = res1
+                        if (res0 != -1):
+                            appIsLoaded = True
+                            lastBeg = res0
+                            while True:
+                                res1 = s_recvPrintBuffer.find(kFAT_LOG_PASS, lastBeg)
+                                res2 = s_recvPrintBuffer.find(kFAT_LOG_FAIL, lastBeg)
+                                if (res1 != -1):
+                                    lastBeg = res1
+                                    self.showContentOnMainResWin('( PASS ) -- ' + filename)
+                                    break
+                                if (res2 != -1):
+                                    lastBeg = res2
+                                    self.showContentOnMainResWin('( FAIL ) -- ' + filename)
+                                    break
+                                time.sleep(0.5)
+                            break
+                        ##############################################################
+                        #status, res0 = self._debugger.readMem32(kFAT_REG_ADDR)
+                        if False: #status and ((res0 & 0xFF) == kFAT_REG_START):
+                            appIsLoaded = True
+                            while True:
+                                status, resx = self._debugger.readMem32(kFAT_REG_ADDR)
+                                if status:
+                                    resx = resx >> 24
+                                    if resx == kFAT_REG_PASS:
                                         self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                         break
-                                    if (res2 != -1):
-                                        lastBeg = res2
+                                    elif resx == kFAT_REG_FAIL:
                                         self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                         break
-                                    time.sleep(0.5)
-                                break
-                            else:
-                                deltaTime = time.perf_counter() - deltaTimeStart
-                                if (deltaTime > 5.0):
-                                    #self.closeUartPort()
-                                    #self.openUartPort()
-                                    #s_recvPrintBuffer = ""
-                                    #lastBeg = 0
-                                    time.sleep(1)
-                                    break
-                            time.sleep(0.5)
+                                time.sleep(0.5)
+                            break
                         ##############################################################
-                        else:
-                            status, res0 = self._debugger.readMem32(kFAT_REG_ADDR)
-                            if status and ((res0 & 0xFF) == kFAT_REG_START):
-                                appIsLoaded = True
-                                while True:
-                                    status, resx = self._debugger.readMem32(kFAT_REG_ADDR)
-                                    if status:
-                                        resx = resx >> 24
-                                        if resx == kFAT_REG_PASS:
-                                            self.showContentOnMainResWin('( PASS ) -- ' + filename)
-                                            break
-                                        elif resx == kFAT_REG_FAIL:
-                                            self.showContentOnMainResWin('( FAIL ) -- ' + filename)
-                                            break
+                        deltaTime = time.perf_counter() - deltaTimeStart
+                        if (deltaTime > 5.0):
+                            time.sleep(1)
+                            break
+                        time.sleep(0.5)
                         ##############################################################
             self.pushButton_runTestCases.setText('Run Test Cases')
             self.pushButton_runTestCases.setStyleSheet("background-color: white")
