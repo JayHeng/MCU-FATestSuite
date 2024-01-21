@@ -20,6 +20,9 @@ from . import debugger_utils
 sys.path.append(os.path.abspath(".."))
 from win import faTesterWin
 
+RES_TEXT_TYPE_IS_LINE   = True
+LOG_TEXT_TYPE_IS_MANUAL = True
+
 s_serialPort = serial.Serial()
 s_recvInterval = 1
 s_recvPrintBuf = ""
@@ -94,12 +97,14 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
         self.uartRecvThread = uartRecvWorker()
         self.uartRecvThread.sinOut.connect(self.thread_receiveUartData)
 
-        self.uartLogThread = uartLogWorker()
-        self.uartLogThread.sinOut.connect(self.textEdit_printWin.setText)
-        self.uartLogThread.start()
-        self.resLogThread = resLogWorker()
-        self.resLogThread.sinOut.connect(self.textEdit_resWin.setText)
-        self.resLogThread.start()
+        if not LOG_TEXT_TYPE_IS_MANUAL:
+            self.uartLogThread = uartLogWorker()
+            self.uartLogThread.sinOut.connect(self.textEdit_printWin.setText)
+            self.uartLogThread.start()
+        if not RES_TEXT_TYPE_IS_LINE:
+            self.resLogThread = resLogWorker()
+            self.resLogThread.sinOut.connect(self.textEdit_resWin.setText)
+            self.resLogThread.start()
 
         self.exeBinRoot = os.getcwd()
         self.exeTopRoot = os.path.dirname(self.exeBinRoot)
@@ -220,6 +225,7 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
     def findTestCases( self ):
         #appFolderPath = self.m_dirPicker_appFolderPath.GetPath()
         #self.sbAppFolderPath = appFolderPath.encode('utf-8').encode("gbk")
+        self.resetTestResult()
         caseTestResultMsg = ""
         fwAppFiles = []
         cpu = None
@@ -229,13 +235,15 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             pass
         fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', cpu)
         files = os.listdir(fwFolderPath)
+        fileIdx = 0
         for file in files:
             filename, filetype = os.path.splitext(file)
             if filetype == '.srec':
                 fwAppFiles.append(os.path.join(fwFolderPath, file))
                 caseTestResultMsg += "( TBD ) -- " + filename + "\n"
+                self.showContentOnMainResWin("( TBD ) -- " + filename, fileIdx)
+                fileIdx += 1
         self.fwAppFiles = fwAppFiles[:]
-        self.resetTestResult()
         if len(fwAppFiles) == 0:
             self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
         else:
@@ -289,12 +297,12 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                                 if (res1 != -1):
                                     lastBeg = res1
                                     s_caseResInfo += '( PASS ) -- ' + filename + '\n'
-                                    self.showContentOnMainResWin('( PASS ) -- ' + filename)
+                                    self.showContentOnMainResWin('( PASS ) -- ' + filename, appIdx)
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
                                     s_caseResInfo += '( FAIL ) -- ' + filename + '\n'
-                                    self.showContentOnMainResWin('( FAIL ) -- ' + filename)
+                                    self.showContentOnMainResWin('( FAIL ) -- ' + filename, appIdx)
                                     break
                                 time.sleep(0.5)
                             break
@@ -308,11 +316,11 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                                     resx = resx >> 24
                                     if resx == kFAT_REG_PASS:
                                         s_caseResInfo += '( PASS ) -- ' + filename + '\n'
-                                        self.showContentOnMainResWin('( PASS ) -- ' + filename)
+                                        self.showContentOnMainResWin('( PASS ) -- ' + filename, appIdx)
                                         break
                                     elif resx == kFAT_REG_FAIL:
                                         s_caseResInfo += '( FAIL ) -- ' + filename + '\n'
-                                        self.showContentOnMainResWin('( FAIL ) -- ' + filename)
+                                        self.showContentOnMainResWin('( FAIL ) -- ' + filename, appIdx)
                                         break
                                 time.sleep(0.5)
                             break
@@ -335,24 +343,74 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                 self.isLoadTestCasesTaskPending = False
             time.sleep(1)
 
-    def showContentOnMainPrintWin( self, contentStr ):
-        global s_isPrintUpdated
-        s_isPrintUpdated = True
-        while (s_isPrintUpdated):
+    def showContentOnMainPrintWin( self, text ):
+        if not LOG_TEXT_TYPE_IS_MANUAL:
+            global s_isPrintUpdated
+            s_isPrintUpdated = True
+            while (s_isPrintUpdated):
+                pass
+            #self.textEdit_printWin.append(contentStr)
+        else:
             pass
-        #self.textEdit_printWin.append(contentStr)
-        pass
 
-    def showContentOnMainResWin( self, contentStr ):
-        global s_isResInfoUpdated
-        s_isResInfoUpdated = True
-        while (s_isResInfoUpdated):
+    def showContentOnMainResWin( self, text, lineIdx=None ):
+        if not RES_TEXT_TYPE_IS_LINE:
+            global s_isResInfoUpdated
+            s_isResInfoUpdated = True
+            while (s_isResInfoUpdated):
+                pass
+            #self.textEdit_resWin.append(contentStr)
+        else:
+            if lineIdx == None:
+                pass
+            elif lineIdx == 0:
+                self.lineEdit_resWin_0.setText(text)
+            elif lineIdx == 1:
+                self.lineEdit_resWin_1.setText(text)
+            elif lineIdx == 2:
+                self.lineEdit_resWin_2.setText(text)
+            elif lineIdx == 3:
+                self.lineEdit_resWin_3.setText(text)
+            elif lineIdx == 4:
+                self.lineEdit_resWin_4.setText(text)
+            elif lineIdx == 5:
+                self.lineEdit_resWin_5.setText(text)
+            elif lineIdx == 6:
+                self.lineEdit_resWin_6.setText(text)
+            elif lineIdx == 7:
+                self.lineEdit_resWin_7.setText(text)
+            elif lineIdx == 8:
+                self.lineEdit_resWin_8.setText(text)
+            elif lineIdx == 9:
+                self.lineEdit_resWin_9.setText(text)
+            elif lineIdx == 10:
+                self.lineEdit_resWin_10.setText(text)
+            elif lineIdx == 11:
+                self.lineEdit_resWin_11.setText(text)
+            elif lineIdx == 12:
+                self.lineEdit_resWin_12.setText(text)
+            elif lineIdx == 13:
+                self.lineEdit_resWin_13.setText(text)
             pass
-        #self.textEdit_resWin.append(contentStr)
-        pass
 
     def resetTestResult( self ):
-        self.textEdit_resWin.clear()
+        if RES_TEXT_TYPE_IS_LINE:
+            self.lineEdit_resWin_0.clear()
+            self.lineEdit_resWin_1.clear()
+            self.lineEdit_resWin_2.clear()
+            self.lineEdit_resWin_3.clear()
+            self.lineEdit_resWin_4.clear()
+            self.lineEdit_resWin_5.clear()
+            self.lineEdit_resWin_6.clear()
+            self.lineEdit_resWin_7.clear()
+            self.lineEdit_resWin_8.clear()
+            self.lineEdit_resWin_9.clear()
+            self.lineEdit_resWin_10.clear()
+            self.lineEdit_resWin_11.clear()
+            self.lineEdit_resWin_12.clear()
+            self.lineEdit_resWin_13.clear()
+        else:
+            self.textEdit_resWin.clear()
         self.textEdit_printWin.clear()
 
     def showAboutMessage( self, myTitle, myContent):
