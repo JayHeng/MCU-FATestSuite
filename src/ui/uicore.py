@@ -196,10 +196,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             self.showContentOnMainResWin(caseTestResultMsg)
             self.pushButton_detectTestCases.setStyleSheet("background-color: green")
 
-    def _debugPrintf( self, contentStr ):
-        if (False):
-            print(contentStr)
-
     def _getVal32FromByteArray( self, binarray, offset=0):
         val32Vaule = ((binarray[3+offset]<<24) + (binarray[2+offset]<<16) + (binarray[1+offset]<<8) + binarray[0+offset])
         return val32Vaule
@@ -217,7 +213,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
             lastBeg = 0
             appLen = len(self.fwAppFiles)
             for appIdx in range(appLen):
-                self._debugPrintf(" app" + str(appIdx) + "\r\n")
                 self.pushButton_runTestCases.setText('Running Test Case ' + str(appIdx+1) + ' / ' + str(appLen))
                 self.showContentOnMainPrintWin('---------Case ' + str(appIdx+1) + ' / ' + str(appLen) + '----------')
                 srecObj = bincopy.BinFile(str(self.fwAppFiles[appIdx]))
@@ -230,7 +225,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                 appIsLoaded = False
                 while (not appIsLoaded):
                     self.showContentOnMainPrintWin('---------Load fw once')
-                    self._debugPrintf("LOAD\r\n")
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc)
                     deltaTimeStart = time.perf_counter()
                     while True:
@@ -239,22 +233,18 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                             res0 = s_recvPrintBuffer.find(kFAT_FW_START, lastBeg)
                             if (res0 != -1):
                                 appIsLoaded = True
-                                self._debugPrintf("START\r\n")
                                 lastBeg = res0
                                 while True:
                                     res1 = s_recvPrintBuffer.find(kFAT_FW_PASS, lastBeg)
                                     res2 = s_recvPrintBuffer.find(kFAT_FW_FAIL, lastBeg)
                                     if (res1 != -1):
-                                        self._debugPrintf("PASS\r\n")
                                         lastBeg = res1
                                         self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                         break
                                     if (res2 != -1):
-                                        self._debugPrintf("FAIL\r\n")
                                         lastBeg = res2
                                         self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                         break
-                                    self._debugPrintf("TRY1/2\r\n")
                                     time.sleep(0.5)
                                 break
                             else:
@@ -266,28 +256,22 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
                                     #lastBeg = 0
                                     time.sleep(1)
                                     break
-                            self._debugPrintf("TRY0\r\n")
                             time.sleep(0.5)
                         ##############################################################
                         else:
                             status, res0 = self._debugger.readMem32(kFAT_REG_ADDR)
                             if status and ((res0 & 0xFF) == kFAT_REG_START):
                                 appIsLoaded = True
-                                self._debugPrintf("START\r\n")
                                 while True:
                                     status, resx = self._debugger.readMem32(kFAT_REG_ADDR)
                                     if status:
                                         resx = resx >> 24
                                         if resx == kFAT_REG_PASS:
-                                            self._debugPrintf("PASS\r\n")
                                             self.showContentOnMainResWin('( PASS ) -- ' + filename)
                                             break
                                         elif resx == kFAT_REG_FAIL:
-                                            self._debugPrintf("FAIL\r\n")
                                             self.showContentOnMainResWin('( FAIL ) -- ' + filename)
                                             break
-                                    self._debugPrintf("TRY1/2\r\n")
-                            self._debugPrintf("TRY0\r\n")
                         ##############################################################
             self.pushButton_runTestCases.setText('Run Test Cases')
             self.pushButton_runTestCases.setStyleSheet("background-color: white")
@@ -296,7 +280,6 @@ class faTesterUi(QMainWindow, faTesterWin.Ui_faTesterWin):
 
     def task_loadTestCases( self ):
         while True:
-            self._debugPrintf("task\r\n")
             if self.isLoadTestCasesTaskPending:
                 self._loadTestCases()
                 self.isLoadTestCasesTaskPending = False
