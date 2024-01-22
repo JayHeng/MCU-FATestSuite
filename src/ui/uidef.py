@@ -13,7 +13,6 @@ kMcuDevice_v1_0       = [kMcuDevice_iMXRT700]
 
 kAdvancedSettings_Tool             = 0
 
-kButtonColor_Yellow = wx.Colour( 166, 255, 255 )
-kButtonColor_White  = wx.Colour( 166, 255, 255 )
-kButtonColor_Green  = wx.Colour( 147, 255, 174 )
-kButtonColor_Grey   = wx.Colour( 255, 0, 0 )
+kButtonColor_Yellow = wx.YELLOW
+kButtonColor_White  = wx.WHITE
+kButtonColor_Green  = wx.GREEN

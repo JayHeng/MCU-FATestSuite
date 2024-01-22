@@ -22,7 +22,7 @@ sys.path.append(os.path.abspath(".."))
 from win import faTesterWin
 
 s_serialPort = serial.Serial()
-s_recvInterval = 1
+s_recvInterval = 0.5
 s_recvPrintBuf = ""
 
 kFAT_LOG_START = 'FAT FW Start'
@@ -92,7 +92,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.m_choice_testLoader.SetSelection(self.toolCommDict['testLoader'])
         if self.toolCommDict['loaderExe'] != None and os.path.isfile(self.toolCommDict['loaderExe']):
             self.loaderExe = self.toolCommDict['loaderExe']
-            self.m_filePicker_setLoaderExe.GetPath(self.loaderExe)
+            self.m_filePicker_setLoaderExe.SetPath(self.loaderExe)
 
     def setTargetSetupValue( self ):
         self.mcuDevice = self.m_choice_mcuDevice.GetString(self.m_choice_mcuDevice.GetSelection())
@@ -188,7 +188,7 @@ class faTesterUi(faTesterWin.faTesterWin):
 
     def _loadTestCases( self ):
         if os.path.isfile(self.loaderExe):
-            #self.resetTestResult()
+            self.resetTestResult()
             self.m_button_runTestCases.SetBackgroundColour(uidef.kButtonColor_Yellow)
             global s_recvPrintBuf
             s_recvPrintBuf = ""
