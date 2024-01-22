@@ -28,6 +28,7 @@ class Target(object):
         self.fatLogStart = get_dict_default(kwargs, 'fatLogStart', None)
         self.fatLogPass = get_dict_default(kwargs, 'fatLogPass', None)
         self.fatLogFail = get_dict_default(kwargs, 'fatLogFail', None)
+        self.fatLogDelay = get_dict_default(kwargs, 'fatLogDelay', None)
 
         self.fatRegAddr = get_dict_default(kwargs, 'fatRegAddr', None)
         self.fatRegStart = get_dict_default(kwargs, 'fatRegStart', None)

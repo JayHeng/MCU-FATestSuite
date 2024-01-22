@@ -25,7 +25,11 @@ kRevision_1_0_0_en =  "【v1.0.0】 \n" + \
 
 kRevision_1_1_0_en =  "【v1.1.0】 \n" + \
                       "  Feature: \n" + \
-                      "     1. Support user config \n\n"
+                      "     1. Support user config (jlink settings, magic log format, recv interval, process timeout) \n\n"
+
+kRevision_1_2_0_en =  "【v1.2.0】 \n" + \
+                      "  Feature: \n" + \
+                      "     1. Support delay time in UART result (magic log) \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
@@ -38,4 +42,5 @@ kMsgLanguageContentDict = {
         'revisionHistory_title':              ['Revision History'],
         'revisionHistory_v1_0_0':             [kRevision_1_0_0_en],
         'revisionHistory_v1_1_0':             [kRevision_1_1_0_en],
+        'revisionHistory_v1_2_0':             [kRevision_1_2_0_en],
 }

@@ -175,6 +175,28 @@ class faTesterUi(faTesterWin.faTesterWin):
         val32Vaule = ((binarray[3+offset]<<24) + (binarray[2+offset]<<16) + (binarray[1+offset]<<8) + binarray[0+offset])
         return val32Vaule
 
+    def _getAppDelayTime( self, loc ):
+        global s_recvPrintBuf
+        delay = 0
+        magicLen = len(self.tgt.fatLogDelay)
+        while True:
+            if len(s_recvPrintBuf) > loc + magicLen:
+                res = s_recvPrintBuf[loc:loc+magicLen+1].find(self.tgt.fatLogDelay)
+                if (res != -1):
+                    loc = loc + res + len(self.tgt.fatLogDelay)
+                    time = ''
+                    while len(s_recvPrintBuf) > loc:
+                        if s_recvPrintBuf[loc] == 's':
+                            delay = int(time)
+                            break
+                        else:
+                            time += s_recvPrintBuf[loc]
+                            loc = loc + 1
+                else:
+                    break
+        #print('delay time = ' + str(delay))
+        return delay
+
     def _loadTestCases( self ):
         if os.path.isfile(self.loaderExe):
             self.resetTestResult()
@@ -207,12 +229,14 @@ class faTesterUi(faTesterWin.faTesterWin):
                 appIsLoaded = False
                 while (not appIsLoaded):
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
-                    deltaTimeStart = time.clock()
+                    deltaTimeStart_load = time.clock()
                     while True:
                         res0 = s_recvPrintBuf.find(self.tgt.fatLogStart, lastBeg)
                         ##############################################################
                         if (res0 != -1):
+                            deltaTimeStart_check = time.clock()
                             appIsLoaded = True
+                            delayTimeApp = self._getAppDelayTime(res0 + len(self.tgt.fatLogStart))
                             lastBeg = res0
                             while True:
                                 res1 = s_recvPrintBuf.find(self.tgt.fatLogPass, lastBeg)
@@ -220,12 +244,19 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 if (res1 != -1):
                                     lastBeg = res1
                                     self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
+                                    if delayTimeApp != 0:
+                                        self.appendContentOnMainResWin('( DELAY ) -- ' + str(delayTimeApp) + 's\n')
+                                        deltaTimeAppStart = time.clock()
+                                        deltaTime_app = time.clock() - deltaTimeAppStart
+                                        while (deltaTime_app < delayTimeApp):
+                                            deltaTime_app = time.clock() - deltaTimeAppStart
+                                            time.sleep(1)
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
                                     self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                     break
-                                deltaTime_check = time.clock() - deltaTimeStart
+                                deltaTime_check = time.clock() - deltaTimeStart_check
                                 if (deltaTime_check > self.tgt.waitAppTimeout):
                                     self.appendContentOnMainResWin('( TIMEOUT ) -- ' + filename + '\n')
                                     time.sleep(1)
@@ -249,7 +280,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 time.sleep(0.5)
                             break
                         ##############################################################
-                        deltaTime_load = time.clock() - deltaTimeStart
+                        deltaTime_load = time.clock() - deltaTimeStart_load
                         if (deltaTime_load > self.tgt.loadAppTimeout):
                             time.sleep(1)
                             break
