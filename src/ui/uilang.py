@@ -23,6 +23,10 @@ kRevision_1_0_0_en =  "【v1.0.0】 \n" + \
                       "     3. Support multiple cases (.srec) detection and load-to-run  \n" + \
                       "     4. Support UART result (magic log) checking \n\n"
 
+kRevision_1_1_0_en =  "【v1.1.0】 \n" + \
+                      "  Feature: \n" + \
+                      "     1. Support user config \n\n"
+
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
         'homePage_info':                      ['https://github.com/JayHeng/MCU-FATestSuite.git \n'],
@@ -33,4 +37,5 @@ kMsgLanguageContentDict = {
         'aboutAuthor_blog':                   [u"Blog: 痞子衡嵌入式 https://www.cnblogs.com/henjay724/ \n"],
         'revisionHistory_title':              ['Revision History'],
         'revisionHistory_v1_0_0':             [kRevision_1_0_0_en],
+        'revisionHistory_v1_1_0':             [kRevision_1_1_0_en],
 }

@@ -102,14 +102,15 @@ class faTesterMain(runcore.faTesterRun):
         wx.MessageBox(msgText, uilang.kMsgLanguageContentDict['aboutAuthor_title'][0], wx.OK | wx.ICON_INFORMATION)
 
     def callbackShowRevisionHistory( self, event ):
-        msgText = ((uilang.kMsgLanguageContentDict['revisionHistory_v1_0_0'][0]))
+        msgText = ((uilang.kMsgLanguageContentDict['revisionHistory_v1_0_0'][0]) +
+                   (uilang.kMsgLanguageContentDict['revisionHistory_v1_1_0'][0]))
         wx.MessageBox(msgText, uilang.kMsgLanguageContentDict['revisionHistory_title'][0], wx.OK | wx.ICON_INFORMATION)
 
 if __name__ == '__main__':
     app = wx.App()
 
     g_main_win = faTesterMain(None)
-    g_main_win.SetTitle(u"MCU FA Test Suite v1.0")
+    g_main_win.SetTitle(u"MCU FA Test Suite v1.1")
     g_main_win.Show()
 
     g_task_loadTestCases = threading.Thread(target=g_main_win.task_loadTestCases)
