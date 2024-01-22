@@ -51,6 +51,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         toolCommDict = uivar.getAdvancedSettings(uidef.kAdvancedSettings_Tool)
         self.toolCommDict = toolCommDict.copy()
         self.mcuDevice = None
+        self.mcuBoard = None
         self.testLoader = None
         self.loaderExe = None
         self._initTargetSetupValue()
@@ -92,6 +93,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.m_choice_mcuDevice.Clear()
         self.m_choice_mcuDevice.SetItems(uidef.kMcuDevice_v1_0)
         self.m_choice_mcuDevice.SetSelection(self.toolCommDict['mcuDevice'])
+        self.m_choice_mcuBoard.SetSelection(self.toolCommDict['mcuBoard'])
         self.m_choice_testLoader.SetSelection(self.toolCommDict['testLoader'])
         if self.toolCommDict['loaderExe'] != None and os.path.isfile(self.toolCommDict['loaderExe']):
             self.loaderExe = self.toolCommDict['loaderExe']
@@ -100,6 +102,8 @@ class faTesterUi(faTesterWin.faTesterWin):
     def setTargetSetupValue( self ):
         self.mcuDevice = self.m_choice_mcuDevice.GetString(self.m_choice_mcuDevice.GetSelection())
         self.toolCommDict['mcuDevice'] = self.m_choice_mcuDevice.GetSelection()
+        self.mcuBoard = self.m_choice_mcuBoard.GetString(self.m_choice_mcuBoard.GetSelection())
+        self.toolCommDict['mcuBoard'] = self.m_choice_mcuBoard.GetSelection()
         self.testLoader = self.m_choice_testLoader.GetString(self.m_choice_testLoader.GetSelection())
         self.toolCommDict['testLoader'] = self.m_choice_testLoader.GetSelection()
 
@@ -166,12 +170,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.resetTestResult()
         caseTestResultMsg = ""
         fwAppFiles = []
-        cpu = None
-        if self.mcuDevice == uidef.kMcuDevice_iMXRT700:
-            cpu = "MIMXRT798"
-        else:
-            pass
-        fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', cpu)
+        fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', self.tgt.cpu, self.mcuBoard)
         files = os.listdir(fwFolderPath)
         for file in files:
             filename, filetype = os.path.splitext(file)
@@ -205,7 +204,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                 self.showInfoMessage('Flow Error', 'Com Port is not opened.')
                 return 
             jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'ui', 'debuggers', 'jlink')
-            self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe, jlinkcmdFolderPath)
+            self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, self.tgt.jlinkDevice, self.tgt.jlinkInterface, self.tgt.jlinkSpeedInkHz, self.loaderExe, jlinkcmdFolderPath)
             self._debugger.open()
             lastBeg = 0
             for appIdx in range(appLen):

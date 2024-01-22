@@ -12,7 +12,7 @@ import ctypes
 from ui import uidef
 from ui import uilang
 from ui import uivar
-from ui import uicore
+from run import runcore
 
 g_main_win = None
 g_task_loadTestCases = None
@@ -29,17 +29,24 @@ def _async_raise(tid, exctype):
         ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
         raise SystemError("PyThreadState_SetAsyncExc failed")
 
-class faTesterMain(uicore.faTesterUi):
+class faTesterMain(runcore.faTesterRun):
 
     def __init__(self, parent=None):
-        uicore.faTesterUi.__init__(self, parent)
+        runcore.faTesterRun.__init__(self, parent)
         self.isUartOpened = False
 
     def _setupMcuTargets( self ):
         self.setTargetSetupValue()
         self.initUi()
+        self.createMcuTarget()
 
     def callbackSetMcuDevice( self, event ):
+        self._setupMcuTargets()
+
+    def callbackSetMcuBoard( self, event ):
+        self._setupMcuTargets()
+
+    def callbackSetTestLoader( self, event ):
         self._setupMcuTargets()
 
     def callbackSetLoaderExe( self, event ):
