@@ -34,6 +34,9 @@ kFAT_REG_START = 0x5A
 kFAT_REG_PASS  = 0xA7
 kFAT_REG_FAIL  = 0x9F
 
+kTIMEOUT_LOAD_APP = 5.0
+kTIMEOUT_WAIT_APP = 30.0
+
 class faTesterUi(faTesterWin.faTesterWin):
 
     def __init__(self, parent):
@@ -229,6 +232,11 @@ class faTesterUi(faTesterWin.faTesterWin):
                                     lastBeg = res2
                                     self.showContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                     break
+                                deltaTime_check = time.clock() - deltaTimeStart
+                                if (deltaTime_check > kTIMEOUT_WAIT_APP):
+                                    self.showContentOnMainResWin('( TIMEOUT ) -- ' + filename + '\n')
+                                    time.sleep(1)
+                                    break
                                 time.sleep(0.5)
                             break
                         ##############################################################
@@ -248,8 +256,8 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 time.sleep(0.5)
                             break
                         ##############################################################
-                        deltaTime = time.clock() - deltaTimeStart
-                        if (deltaTime > 5.0):
+                        deltaTime_load = time.clock() - deltaTimeStart
+                        if (deltaTime_load > kTIMEOUT_LOAD_APP):
                             time.sleep(1)
                             break
                         time.sleep(0.5)
