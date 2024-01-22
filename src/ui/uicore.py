@@ -68,6 +68,9 @@ class faTesterUi(faTesterWin.faTesterWin):
             self.m_choice_comPort.SetSelection(self.m_choice_comPort.FindString(lastPort))
         else:
             self.m_choice_comPort.SetSelection(0)
+            self.enableUartToRecvData = False
+            self.m_button_open.SetLabel('Open')
+            self.m_button_open.SetBackgroundColour(uidef.kButtonColor_White)
         baudItems = ['115200']
         self.m_choice_baudrate.Clear()
         self.m_choice_baudrate.SetItems(baudItems)
@@ -154,7 +157,7 @@ class faTesterUi(faTesterWin.faTesterWin):
     def findTestCases( self ):
         #appFolderPath = self.m_dirPicker_appFolderPath.GetPath()
         #self.sbAppFolderPath = appFolderPath.encode('utf-8').encode("gbk")
-        self.resetTestResult()
+        self.resetTestResult(False)
         caseTestResultMsg = ""
         fwAppFiles = []
         fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', self.tgt.cpu, self.mcuBoard)
@@ -199,7 +202,7 @@ class faTesterUi(faTesterWin.faTesterWin):
 
     def _loadTestCases( self ):
         if os.path.isfile(self.loaderExe):
-            self.resetTestResult()
+            self.resetTestResult(False)
             appLen = len(self.fwAppFiles)
             if appLen == 0:
                 self.showInfoMessage('Flow Error', 'You need to detect test cases first.')
@@ -243,14 +246,16 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 res2 = s_recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
                                 if (res1 != -1):
                                     lastBeg = res1
-                                    self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
+                                    self.appendContentOnMainResWin('( PASS ) -- ' + filename)
                                     if delayTimeApp != 0:
-                                        self.appendContentOnMainResWin('( DELAY ) -- ' + str(delayTimeApp) + 's\n')
+                                        self.appendContentOnMainResWin(', <case requires ' + str(delayTimeApp) + 's delay>\n')
                                         deltaTimeAppStart = time.clock()
                                         deltaTime_app = time.clock() - deltaTimeAppStart
                                         while (deltaTime_app < delayTimeApp):
                                             deltaTime_app = time.clock() - deltaTimeAppStart
                                             time.sleep(1)
+                                    else:
+                                        self.appendContentOnMainResWin('\n')
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
@@ -309,9 +314,11 @@ class faTesterUi(faTesterWin.faTesterWin):
     def appendContentOnMainResWin( self, text ):
         self.m_textCtrl_resWin.AppendText(text)
 
-    def resetTestResult( self ):
+    def resetTestResult( self , portReset = True):
         self.m_textCtrl_resWin.Clear()
         self.m_textCtrl_printWin.Clear()
+        if portReset:
+            self.setPortSetupValue()
 
     def showInfoMessage( self, myTitle, myContent):
         wx.MessageBox(myContent, myTitle, wx.OK | wx.ICON_INFORMATION)

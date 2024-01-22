@@ -29,7 +29,10 @@ kRevision_1_1_0_en =  "【v1.1.0】 \n" + \
 
 kRevision_1_2_0_en =  "【v1.2.0】 \n" + \
                       "  Feature: \n" + \
-                      "     1. Support delay time in UART result (magic log) \n\n"
+                      "     1. Support delay time in UART result (magic log) \n" + \
+                      "  Improvement: \n" + \
+                      "     1. Can refresh COM port list via 'Reset Test Result' button \n" + \
+                      "     2. Kill jlink process to fix stable issue \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
