@@ -120,7 +120,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         try:
             s_serialPort.open()
         except:
-            wx.MessageBox('Com Port cannot opened!', 'Port Error', wx.OK | wx.ICON_INFORMATION)
+            self.showInfoMessage('Port Error', 'Com Port cannot be opened!')
             return
         s_serialPort.set_buffer_size(rx_size=1024 * 16)
         s_serialPort.reset_input_buffer()
@@ -180,7 +180,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                 caseTestResultMsg += "( TBD ) -- " + filename + "\n"
         self.fwAppFiles = fwAppFiles[:]
         if len(fwAppFiles) == 0:
-            self.showInfoMessage('Error', 'Cannot find any test case files (.srec)')
+            self.showInfoMessage('App Error', 'Cannot find any test case files (.srec)')
         else:
             self.showContentOnMainResWin(caseTestResultMsg)
             self.m_button_detectTestCases.SetBackgroundColour(uidef.kButtonColor_Green)
@@ -192,15 +192,22 @@ class faTesterUi(faTesterWin.faTesterWin):
     def _loadTestCases( self ):
         if os.path.isfile(self.loaderExe):
             self.resetTestResult()
+            appLen = len(self.fwAppFiles)
+            if appLen == 0:
+                self.showInfoMessage('Flow Error', 'You need to detect test cases first.')
+                return 
             self.m_button_runTestCases.SetBackgroundColour(uidef.kButtonColor_Yellow)
             global s_recvPrintBuf
             s_recvPrintBuf = ""
-            s_serialPort.reset_input_buffer()
+            if s_serialPort.isOpen():
+                s_serialPort.reset_input_buffer()
+            else:
+                self.showInfoMessage('Flow Error', 'Com Port is not opened.')
+                return 
             jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'ui', 'debuggers', 'jlink')
             self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, 'MIMXRT798S_M33_0', 'SWD', 4000, self.loaderExe, jlinkcmdFolderPath)
             self._debugger.open()
             lastBeg = 0
-            appLen = len(self.fwAppFiles)
             for appIdx in range(appLen):
                 self.m_button_runTestCases.SetLabel('Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
                 self.showContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n')
@@ -265,7 +272,7 @@ class faTesterUi(faTesterWin.faTesterWin):
             self.m_button_runTestCases.SetLabel('Run Test Cases')
             self.m_button_runTestCases.SetBackgroundColour(uidef.kButtonColor_White)
         else:
-            self.showInfoMessage('Error', 'You need to set Loader EXE first.')
+            self.showInfoMessage('Loader Error', 'You need to set Loader EXE first.')
 
     def task_loadTestCases( self ):
         while True:
