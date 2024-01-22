@@ -16,7 +16,7 @@ kMenuPosition_Tools    = 0x3
 kMenuPosition_Window   = 0x4
 kMenuPosition_Help     = 0x5
 
-kRevision_0_1_0_en =  "【v0.1.0】 \n" + \
+kRevision_1_0_0_en =  "【v1.0.0】 \n" + \
                       "  Feature: \n" + \
                       "     1. Support i.MXRT7xx \n" + \
                       "     2. Support J-LINK SWD \n\n"
@@ -30,5 +30,5 @@ kMsgLanguageContentDict = {
         'aboutAuthor_email2':                 ['Email: hengjie1989@foxmail.com \n'],
         'aboutAuthor_blog':                   [u"Blog: 痞子衡嵌入式 https://www.cnblogs.com/henjay724/ \n"],
         'revisionHistory_title':              ['Revision History'],
-        'revisionHistory_v0_1_0':             [kRevision_0_1_0_en],
+        'revisionHistory_v1_0_0':             [kRevision_1_0_0_en],
 }
