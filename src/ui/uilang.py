@@ -19,7 +19,9 @@ kMenuPosition_Help     = 0x5
 kRevision_1_0_0_en =  "【v1.0.0】 \n" + \
                       "  Feature: \n" + \
                       "     1. Support i.MXRT7xx \n" + \
-                      "     2. Support J-LINK SWD \n\n"
+                      "     2. Support J-LINK SWD \n" + \
+                      "     3. Support multiple cases (.srec) detection and load-to-run  \n" + \
+                      "     4. Support UART result (magic log) checking \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],

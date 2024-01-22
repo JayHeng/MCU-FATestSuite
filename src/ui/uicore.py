@@ -146,7 +146,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                         data = s_serialPort.read(num)
                         string = data.decode()
                         s_recvPrintBuf += string
-                        self.showContentOnMainPrintWin(string)
+                        self.appendContentOnMainPrintWin(string)
             time.sleep(s_recvInterval)
 
     def selectLoaderExe( self ):
@@ -182,7 +182,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         if len(fwAppFiles) == 0:
             self.showInfoMessage('App Error', 'Cannot find any test case files (.srec)')
         else:
-            self.showContentOnMainResWin(caseTestResultMsg)
+            self.appendContentOnMainResWin(caseTestResultMsg)
             self.m_button_detectTestCases.SetBackgroundColour(uidef.kButtonColor_Green)
 
     def _getVal32FromByteArray( self, binarray, offset=0):
@@ -210,7 +210,7 @@ class faTesterUi(faTesterWin.faTesterWin):
             lastBeg = 0
             for appIdx in range(appLen):
                 self.m_button_runTestCases.SetLabel('Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
-                self.showContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n')
+                self.appendContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n')
                 srecObj = bincopy.BinFile(str(self.fwAppFiles[appIdx]))
                 filepath, file = os.path.split(self.fwAppFiles[appIdx])
                 filename, filetype = os.path.splitext(file)
@@ -233,15 +233,15 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 res2 = s_recvPrintBuf.find(kFAT_LOG_FAIL, lastBeg)
                                 if (res1 != -1):
                                     lastBeg = res1
-                                    self.showContentOnMainResWin('( PASS ) -- ' + filename + '\n')
+                                    self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
-                                    self.showContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
+                                    self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                     break
                                 deltaTime_check = time.clock() - deltaTimeStart
                                 if (deltaTime_check > kTIMEOUT_WAIT_APP):
-                                    self.showContentOnMainResWin('( TIMEOUT ) -- ' + filename + '\n')
+                                    self.appendContentOnMainResWin('( TIMEOUT ) -- ' + filename + '\n')
                                     time.sleep(1)
                                     break
                                 time.sleep(0.5)
@@ -255,10 +255,10 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 if status:
                                     resx = resx >> 24
                                     if resx == kFAT_REG_PASS:
-                                        self.showContentOnMainResWin('( PASS ) -- ' + filename + '\n')
+                                        self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
                                         break
                                     elif resx == kFAT_REG_FAIL:
-                                        self.showContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
+                                        self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                         break
                                 time.sleep(0.5)
                             break
@@ -271,6 +271,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                         ##############################################################
             self.m_button_runTestCases.SetLabel('Run Test Cases')
             self.m_button_runTestCases.SetBackgroundColour(uidef.kButtonColor_White)
+            #self.flushContentOnMainPrintWin()
         else:
             self.showInfoMessage('Loader Error', 'You need to set Loader EXE first.')
 
@@ -281,10 +282,14 @@ class faTesterUi(faTesterWin.faTesterWin):
                 self.isLoadTestCasesTaskPending = False
             time.sleep(1)
 
-    def showContentOnMainPrintWin( self, text ):
+    def appendContentOnMainPrintWin( self, text ):
         self.m_textCtrl_printWin.AppendText(text)
 
-    def showContentOnMainResWin( self, text ):
+    def flushContentOnMainPrintWin( self ):
+        self.m_textCtrl_printWin.Clear()
+        self.m_textCtrl_printWin.AppendText(s_recvPrintBuf)
+
+    def appendContentOnMainResWin( self, text ):
         self.m_textCtrl_resWin.AppendText(text)
 
     def resetTestResult( self ):
