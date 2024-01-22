@@ -196,8 +196,11 @@ class JLinkDebugger(Debugger):
         args = 'r' + '\r\n' + 'h' + '\r\n' + w4Arg + 'LoadFile ' + fwFile + '\r\n' + 'wreg MSP ' + sp + '\r\n' + 'wreg PSP ' + sp + '\r\n' + 'SetPC ' + pc + '\r\n' + 'g' + '\r\n' + 'q'
         commandArgs = self.getJlinkCmdArg(args)
         # Execute the command.
+        process = None
         try:
             process = subprocess.Popen(commandArgs, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ret = process.communicate()
+            process.kill()
         except Exception as e:
             print("Unknown exception: %s" % e)
             status = False
