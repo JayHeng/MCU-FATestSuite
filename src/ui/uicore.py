@@ -22,20 +22,7 @@ sys.path.append(os.path.abspath(".."))
 from win import faTesterWin
 
 s_serialPort = serial.Serial()
-s_recvInterval = 0.5
 s_recvPrintBuf = ""
-
-kFAT_LOG_START = 'FAT FW Start'
-kFAT_LOG_PASS  = 'FAT FW Pass'
-kFAT_LOG_FAIL  = 'FAT FW Fail'
-
-kFAT_REG_ADDR  = 0x50062FE0
-kFAT_REG_START = 0x5A
-kFAT_REG_PASS  = 0xA7
-kFAT_REG_FAIL  = 0x9F
-
-kTIMEOUT_LOAD_APP = 5.0
-kTIMEOUT_WAIT_APP = 30.0
 
 class faTesterUi(faTesterWin.faTesterWin):
 
@@ -151,7 +138,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                         string = data.decode()
                         s_recvPrintBuf += string
                         self.appendContentOnMainPrintWin(string)
-            time.sleep(s_recvInterval)
+            time.sleep(self.tgt.uartRecvInterval)
 
     def selectLoaderExe( self ):
         loaderPath = self.m_filePicker_setLoaderExe.GetPath()
@@ -222,14 +209,14 @@ class faTesterUi(faTesterWin.faTesterWin):
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
                     deltaTimeStart = time.clock()
                     while True:
-                        res0 = s_recvPrintBuf.find(kFAT_LOG_START, lastBeg)
+                        res0 = s_recvPrintBuf.find(self.tgt.fatLogStart, lastBeg)
                         ##############################################################
                         if (res0 != -1):
                             appIsLoaded = True
                             lastBeg = res0
                             while True:
-                                res1 = s_recvPrintBuf.find(kFAT_LOG_PASS, lastBeg)
-                                res2 = s_recvPrintBuf.find(kFAT_LOG_FAIL, lastBeg)
+                                res1 = s_recvPrintBuf.find(self.tgt.fatLogPass, lastBeg)
+                                res2 = s_recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
                                 if (res1 != -1):
                                     lastBeg = res1
                                     self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
@@ -239,31 +226,31 @@ class faTesterUi(faTesterWin.faTesterWin):
                                     self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                     break
                                 deltaTime_check = time.clock() - deltaTimeStart
-                                if (deltaTime_check > kTIMEOUT_WAIT_APP):
+                                if (deltaTime_check > self.tgt.waitAppTimeout):
                                     self.appendContentOnMainResWin('( TIMEOUT ) -- ' + filename + '\n')
                                     time.sleep(1)
                                     break
                                 time.sleep(0.5)
                             break
                         ##############################################################
-                        #status, res0 = self._debugger.readMem32(kFAT_REG_ADDR)
-                        if False: #status and ((res0 & 0xFF) == kFAT_REG_START):
+                        #status, res0 = self._debugger.readMem32(self.tgt.fatRegAddr)
+                        if False: #status and ((res0 & 0xFF) == self.tgt.fatRegStart):
                             appIsLoaded = True
                             while True:
-                                status, resx = self._debugger.readMem32(kFAT_REG_ADDR)
+                                status, resx = self._debugger.readMem32(self.tgt.fatRegAddr)
                                 if status:
                                     resx = resx >> 24
-                                    if resx == kFAT_REG_PASS:
+                                    if resx == self.tgt.fatRegPass:
                                         self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
                                         break
-                                    elif resx == kFAT_REG_FAIL:
+                                    elif resx == self.tgt.fatRegFail:
                                         self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                         break
                                 time.sleep(0.5)
                             break
                         ##############################################################
                         deltaTime_load = time.clock() - deltaTimeStart
-                        if (deltaTime_load > kTIMEOUT_LOAD_APP):
+                        if (deltaTime_load > self.tgt.loadAppTimeout):
                             time.sleep(1)
                             break
                         time.sleep(0.5)
