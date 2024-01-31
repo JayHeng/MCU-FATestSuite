@@ -34,6 +34,10 @@ kRevision_1_2_0_en =  "【v1.2.0】 \n" + \
                       "     1. Can refresh COM port list via 'Reset Test Result' button \n" + \
                       "     2. Kill jlink process to fix stable issue \n\n"
 
+kRevision_1_2_1_en =  "【v1.2.1】 \n" + \
+                      "  Improvement: \n" + \
+                      "     1. Tool path can contain spaces \n\n"
+
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
         'homePage_info':                      ['https://github.com/JayHeng/MCU-FATestSuite.git \n'],
@@ -46,4 +50,5 @@ kMsgLanguageContentDict = {
         'revisionHistory_v1_0_0':             [kRevision_1_0_0_en],
         'revisionHistory_v1_1_0':             [kRevision_1_1_0_en],
         'revisionHistory_v1_2_0':             [kRevision_1_2_0_en],
+        'revisionHistory_v1_2_1':             [kRevision_1_2_1_en],
 }

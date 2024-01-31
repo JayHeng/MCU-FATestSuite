@@ -216,8 +216,10 @@ class faTesterUi(faTesterWin.faTesterWin):
                 self.showInfoMessage('Flow Error', 'Com Port is not opened.')
                 return 
             jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'ui', 'debuggers', 'jlink')
+            #print('Creating JLink debugger object...')
             self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, self.tgt.jlinkDevice, self.tgt.jlinkInterface, self.tgt.jlinkSpeedInkHz, self.loaderExe, jlinkcmdFolderPath)
             self._debugger.open()
+            #print('Created JLink debugger object\r\n')
             lastBeg = 0
             for appIdx in range(appLen):
                 self.m_button_runTestCases.SetLabel('Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
@@ -231,7 +233,9 @@ class faTesterUi(faTesterWin.faTesterWin):
                 pc = self._getVal32FromByteArray(initialAppBytes[4:8])
                 appIsLoaded = False
                 while (not appIsLoaded):
+                    #print('Loading app ' + self.fwAppFiles[appIdx] + ' via JLink debugger...')
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
+                    #print('Loaded app via JLink debugger\r\n')
                     deltaTimeStart_load = time.clock()
                     while True:
                         res0 = s_recvPrintBuf.find(self.tgt.fatLogStart, lastBeg)
