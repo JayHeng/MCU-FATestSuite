@@ -11,6 +11,7 @@ g_hasSubWinBeenOpened = False
 g_cfgFilename = None
 g_toolCommDict = {'mcuDevice':None,
                   'mcuBoard':None,
+                  'boardSN':None,
                   'testLoader':None,
                   'loaderExe':None,
                  }
@@ -32,6 +33,7 @@ def initVar(cfgFilename):
     else:
         g_toolCommDict = {'mcuDevice':0,
                           'mcuBoard':0,
+                          'boardSN':"TRxxxxxxxx",
                           'testLoader':0,
                           'loaderExe':None,
                          }

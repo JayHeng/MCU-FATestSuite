@@ -17,7 +17,7 @@ import wx.xrc
 class faTesterWin ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MCU FA Test Suite", pos = wx.DefaultPosition, size = wx.Size( 861,520 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MCU FA Test Suite", pos = wx.DefaultPosition, size = wx.Size( 861,550 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -85,6 +85,14 @@ class faTesterWin ( wx.Frame ):
         self.m_choice_mcuBoard = wx.Choice( self.m_panel_targetSetup, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), m_choice_mcuBoardChoices, 0 )
         self.m_choice_mcuBoard.SetSelection( 0 )
         wSizer_targetSetup.Add( self.m_choice_mcuBoard, 0, wx.ALL, 5 )
+
+        self.m_staticText_boardSN = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, u"Board SN:", wx.DefaultPosition, wx.Size( 75,-1 ), 0 )
+        self.m_staticText_boardSN.Wrap( -1 )
+
+        wSizer_targetSetup.Add( self.m_staticText_boardSN, 0, wx.ALL, 5 )
+
+        self.m_textCtrl_boardSN = wx.TextCtrl( self.m_panel_targetSetup, wx.ID_ANY, u"TR", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
+        wSizer_targetSetup.Add( self.m_textCtrl_boardSN, 0, wx.ALL, 5 )
 
         self.m_staticText_testLoader = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, u"Test Loader:", wx.DefaultPosition, wx.Size( 75,-1 ), 0 )
         self.m_staticText_testLoader.Wrap( -1 )
@@ -215,7 +223,7 @@ class faTesterWin ( wx.Frame ):
         self.m_panel_testResult = wx.Panel( self.m_notebook_testResult, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         wSizer_testResult = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
 
-        self.m_textCtrl_resWin = wx.TextCtrl( self.m_panel_testResult, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 300,390 ), wx.TE_MULTILINE|wx.TE_RICH2 )
+        self.m_textCtrl_resWin = wx.TextCtrl( self.m_panel_testResult, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 300,420 ), wx.TE_MULTILINE|wx.TE_RICH2 )
         wSizer_testResult.Add( self.m_textCtrl_resWin, 0, wx.ALL, 5 )
 
 
@@ -235,7 +243,7 @@ class faTesterWin ( wx.Frame ):
         self.m_panel_recvLog = wx.Panel( self.m_notebook_recvLog, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         wSizer_recvLog = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
 
-        self.m_textCtrl_printWin = wx.TextCtrl( self.m_panel_recvLog, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 220,390 ), wx.TE_MULTILINE|wx.TE_RICH2 )
+        self.m_textCtrl_printWin = wx.TextCtrl( self.m_panel_recvLog, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 220,420 ), wx.TE_MULTILINE|wx.TE_RICH2 )
         wSizer_recvLog.Add( self.m_textCtrl_printWin, 0, wx.ALL, 5 )
 
 
