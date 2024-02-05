@@ -34,7 +34,9 @@ kRevision_1_2_0_en =  "【v1.2.0】 \n" + \
                       "     1. Can refresh COM port list via 'Reset Test Result' button \n" + \
                       "     2. Kill jlink process to fix stable issue \n\n"
 
-kRevision_1_2_1_en =  "【v1.2.1】 \n" + \
+kRevision_1_3_0_en =  "【v1.3.0】 \n" + \
+                      "  Feature: \n" + \
+                      "     1. Can save test result into file automatically \n" + \
                       "  Improvement: \n" + \
                       "     1. Tool path can contain spaces \n\n"
 
@@ -50,5 +52,5 @@ kMsgLanguageContentDict = {
         'revisionHistory_v1_0_0':             [kRevision_1_0_0_en],
         'revisionHistory_v1_1_0':             [kRevision_1_1_0_en],
         'revisionHistory_v1_2_0':             [kRevision_1_2_0_en],
-        'revisionHistory_v1_2_1':             [kRevision_1_2_1_en],
+        'revisionHistory_v1_3_0':             [kRevision_1_3_0_en],
 }

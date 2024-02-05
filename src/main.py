@@ -105,14 +105,14 @@ class faTesterMain(runcore.faTesterRun):
         msgText = ((uilang.kMsgLanguageContentDict['revisionHistory_v1_0_0'][0]) +
                    (uilang.kMsgLanguageContentDict['revisionHistory_v1_1_0'][0]) +
                    (uilang.kMsgLanguageContentDict['revisionHistory_v1_2_0'][0]) +
-                   (uilang.kMsgLanguageContentDict['revisionHistory_v1_2_1'][0]))
+                   (uilang.kMsgLanguageContentDict['revisionHistory_v1_3_0'][0]))
         wx.MessageBox(msgText, uilang.kMsgLanguageContentDict['revisionHistory_title'][0], wx.OK | wx.ICON_INFORMATION)
 
 if __name__ == '__main__':
     app = wx.App()
 
     g_main_win = faTesterMain(None)
-    g_main_win.SetTitle(u"MCU FA Test Suite v1.2.1")
+    g_main_win.SetTitle(u"MCU FA Test Suite v1.3.0")
     g_main_win.Show()
 
     g_task_loadTestCases = threading.Thread(target=g_main_win.task_loadTestCases)

@@ -22,6 +22,7 @@ sys.path.append(os.path.abspath(".."))
 from win import faTesterWin
 
 s_serialPort = serial.Serial()
+s_caseResultLog = ""
 s_recvPrintBuf = ""
 
 class faTesterUi(faTesterWin.faTesterWin):
@@ -84,6 +85,8 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.m_choice_mcuDevice.SetItems(uidef.kMcuDevice_v1_0)
         self.m_choice_mcuDevice.SetSelection(self.toolCommDict['mcuDevice'])
         self.m_choice_mcuBoard.SetSelection(self.toolCommDict['mcuBoard'])
+        self.m_textCtrl_boardSN.Clear()
+        self.m_textCtrl_boardSN.write(self.toolCommDict['boardSN'])
         self.m_choice_testLoader.SetSelection(self.toolCommDict['testLoader'])
         if self.toolCommDict['loaderExe'] != None and os.path.isfile(self.toolCommDict['loaderExe']):
             self.loaderExe = self.toolCommDict['loaderExe']
@@ -209,7 +212,9 @@ class faTesterUi(faTesterWin.faTesterWin):
                 return 
             self.m_button_runTestCases.SetBackgroundColour(uidef.kButtonColor_Yellow)
             global s_recvPrintBuf
+            global s_caseResultLog
             s_recvPrintBuf = ""
+            s_caseResultLog = ""
             if s_serialPort.isOpen():
                 s_serialPort.reset_input_buffer()
             else:
@@ -250,8 +255,10 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 res2 = s_recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
                                 if (res1 != -1):
                                     lastBeg = res1
+                                    s_caseResultLog += '( PASS ) -- ' + filename
                                     self.appendContentOnMainResWin('( PASS ) -- ' + filename)
                                     if delayTimeApp != 0:
+                                        s_caseResultLog += ', <case requires ' + str(delayTimeApp) + 's delay>\n'
                                         self.appendContentOnMainResWin(', <case requires ' + str(delayTimeApp) + 's delay>\n')
                                         deltaTimeAppStart = time.clock()
                                         deltaTime_app = time.clock() - deltaTimeAppStart
@@ -259,14 +266,17 @@ class faTesterUi(faTesterWin.faTesterWin):
                                             deltaTime_app = time.clock() - deltaTimeAppStart
                                             time.sleep(1)
                                     else:
+                                        s_caseResultLog += '\n'
                                         self.appendContentOnMainResWin('\n')
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
+                                    s_caseResultLog += '( FAIL ) -- ' + filename + '\n'
                                     self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                     break
                                 deltaTime_check = time.clock() - deltaTimeStart_check
                                 if (deltaTime_check > self.tgt.waitAppTimeout):
+                                    s_caseResultLog += '( TIMEOUT ) -- ' + filename + '\n'
                                     self.appendContentOnMainResWin('( TIMEOUT ) -- ' + filename + '\n')
                                     time.sleep(1)
                                     break
@@ -281,9 +291,11 @@ class faTesterUi(faTesterWin.faTesterWin):
                                 if status:
                                     resx = resx >> 24
                                     if resx == self.tgt.fatRegPass:
+                                        s_caseResultLog += '( PASS ) -- ' + filename + '\n'
                                         self.appendContentOnMainResWin('( PASS ) -- ' + filename + '\n')
                                         break
                                     elif resx == self.tgt.fatRegFail:
+                                        s_caseResultLog += '( FAIL ) -- ' + filename + '\n'
                                         self.appendContentOnMainResWin('( FAIL ) -- ' + filename + '\n')
                                         break
                                 time.sleep(0.5)
@@ -301,10 +313,27 @@ class faTesterUi(faTesterWin.faTesterWin):
         else:
             self.showInfoMessage('Loader Error', 'You need to set Loader EXE first.')
 
+    def _saveTestResult( self ):
+        boardSN = self.m_textCtrl_boardSN.GetLineText(0)
+        if len(boardSN) == 0:
+            boardSN = "SNxxxxxxxx"
+        else:
+            self.toolCommDict['boardSN'] = boardSN
+        resFilename = os.path.join(self.exeTopRoot, 'bin', self.mcuDevice + "_" + self.mcuBoard + "_" + boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%Hh%Mm%Ss ',time.localtime(time.time())) + '.txt')
+        global s_recvPrintBuf
+        global s_caseResultLog
+        with open(resFilename, 'w+') as fileObj:
+            fileObj.write("\r\n-----------case result log--------------\r\n")
+            fileObj.write(s_caseResultLog)
+            fileObj.write("\r\n-----------case print log---------------\r\n")
+            fileObj.write(s_recvPrintBuf)
+            fileObj.close()
+
     def task_loadTestCases( self ):
         while True:
             if self.isLoadTestCasesTaskPending:
                 self._loadTestCases()
+                self._saveTestResult()
                 self.isLoadTestCasesTaskPending = False
             time.sleep(1)
 
