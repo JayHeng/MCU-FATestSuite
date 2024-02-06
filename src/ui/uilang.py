@@ -36,9 +36,10 @@ kRevision_1_2_0_en =  "【v1.2.0】 \n" + \
 
 kRevision_1_3_0_en =  "【v1.3.0】 \n" + \
                       "  Feature: \n" + \
-                      "     1. Add custom device/board option \n" + \
-                      "     2. Can save test result into text file automatically \n" + \
-                      "     3. Support user config (load app retry count) \n" + \
+                      "     1. Add custom device/board option into UI \n" + \
+                      "     2. Add board Serial Number option into UI \n" + \
+                      "     3. Can save test result into text file automatically \n" + \
+                      "     4. Support user config (load app retry count) \n" + \
                       "  Improvement: \n" + \
                       "     1. Tool path can contain spaces \n\n"
 

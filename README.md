@@ -1,7 +1,7 @@
 # MCU-FATestSuite
 A flexible FAT tool based on Python2.7+wxPython4.0, it can do flexible FA tests for NXP MCU (i.MXRT...) | 恩智浦MCU板卡出厂验收测试(FAT)一站式工具 
 
-![](./doc/tool_v1.2_view.PNG)
+![](./doc/tool_v1.3_view.PNG)
 
 ### 1. 使用步骤
 ```text
@@ -41,9 +41,10 @@ fatLogFail  = 'FAT FW Fail'
 fatLogDelay = ' DelayTime='
 
 # 从调用 J-Link 加载程序开始到接收到 fatLogStart 的最大等待时间
-# 如这个时间内未收到 fatLogStart，则反复调用 J-Link 加载该程序
-loadAppTimeout = 5.0  # seconds
+loadAppTimeout    = 5.0  # seconds
+# loadAppTimeout 时间内未收到 fatLogStart，重复调用 J-Link 加载程序次数，失败返回 LOAD-FAIL 测试结果
+loadAppRetryCount = 3
 
-# 从接收到 fatLogStart 开始到接收到 fatLogPass/fatLogFail 的最大等待时间，超时可返回 TIMEOUT 测试结果
-waitAppTimeout = 10.0 # seconds
+# 从接收到 fatLogStart 开始到接收到 fatLogPass/fatLogFail 的最大等待时间，超时可返回 RUN-TIMEOUT 测试结果
+waitAppTimeout    = 10.0 # seconds
 ```
