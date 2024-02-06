@@ -42,8 +42,10 @@ class faTesterMain(runcore.faTesterRun):
 
     def callbackSetMcuDevice( self, event ):
         self._setupMcuTargets()
+        self.setMcuBoardValue()
 
     def callbackSetMcuBoard( self, event ):
+        self.setMcuBoardValue()
         self._setupMcuTargets()
 
     def callbackSetTestLoader( self, event ):

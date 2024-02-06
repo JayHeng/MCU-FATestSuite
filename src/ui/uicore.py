@@ -39,6 +39,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.loaderExe = None
         self._initTargetSetupValue()
         self.setTargetSetupValue()
+        self.setMcuBoardValue()
         self.initUi()
         self.fwAppFiles = []
         self.isLoadTestCasesTaskPending = False
@@ -80,9 +81,9 @@ class faTesterUi(faTesterWin.faTesterWin):
 
     def _initTargetSetupValue( self ):
         self.m_choice_mcuDevice.Clear()
-        self.m_choice_mcuDevice.SetItems(uidef.kMcuDevice_v1_0)
+        self.m_choice_mcuDevice.SetItems(uidef.kMcuDevice_Latest)
         self.m_choice_mcuDevice.SetSelection(self.toolCommDict['mcuDevice'])
-        self.m_choice_mcuBoard.SetSelection(self.toolCommDict['mcuBoard'])
+        self._refreshMcuBoardList()
         self.m_textCtrl_boardSN.Clear()
         self.m_textCtrl_boardSN.write(self.toolCommDict['boardSN'])
         self.m_choice_testLoader.SetSelection(self.toolCommDict['testLoader'])
@@ -93,12 +94,29 @@ class faTesterUi(faTesterWin.faTesterWin):
     def setTargetSetupValue( self ):
         self.mcuDevice = self.m_choice_mcuDevice.GetString(self.m_choice_mcuDevice.GetSelection())
         self.toolCommDict['mcuDevice'] = self.m_choice_mcuDevice.GetSelection()
-        self.mcuBoard = self.m_choice_mcuBoard.GetString(self.m_choice_mcuBoard.GetSelection())
-        self.toolCommDict['mcuBoard'] = self.m_choice_mcuBoard.GetSelection()
+        self._refreshMcuBoardList()
         self.boardSN = self.m_textCtrl_boardSN.GetLineText(0)
         self.toolCommDict['boardSN'] = self.boardSN
         self.testLoader = self.m_choice_testLoader.GetString(self.m_choice_testLoader.GetSelection())
         self.toolCommDict['testLoader'] = self.m_choice_testLoader.GetSelection()
+
+    def setMcuBoardValue( self ):
+        self.mcuBoard = self.m_choice_mcuBoard.GetString(self.m_choice_mcuBoard.GetSelection())
+        self.toolCommDict['mcuBoard'] = self.mcuBoard
+
+    def _refreshMcuBoardList( self ):
+        self.m_choice_mcuBoard.Clear()
+        if self.mcuDevice == uidef.kMcuDevice_iMXRT700:
+            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT700)
+        elif self.mcuDevice == uidef.kMcuDevice_Custom:
+            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_Custom)
+        else:
+            pass
+        retSel = self.m_choice_mcuBoard.FindString(self.toolCommDict['mcuBoard'])
+        if retSel != wx.NOT_FOUND:
+            self.m_choice_mcuBoard.SetSelection(retSel)
+        else:
+            self.m_choice_mcuBoard.SetSelection(0)
 
     def updateBoardSN ( self ):
         self.boardSN = self.m_textCtrl_boardSN.GetLineText(0)
