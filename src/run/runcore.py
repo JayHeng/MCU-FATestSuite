@@ -228,7 +228,7 @@ class faTesterRun(uicore.faTesterUi):
 
     def _saveTestResult( self ):
         self.updateBoardSN()
-        resFilename = os.path.join(self.exeTopRoot, 'bin', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%Hh%Mm%Ss ',time.localtime(time.time())) + '.txt')
+        resFilename = os.path.join(self.exeTopRoot, 'bin', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())) + '.txt')
         with open(resFilename, 'w+') as fileObj:
             fileObj.write("\r\n-----------case result log--------------\r\n")
             fileObj.write(self.caseResultLog)

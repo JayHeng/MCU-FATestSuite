@@ -36,7 +36,8 @@ kRevision_1_2_0_en =  "【v1.2.0】 \n" + \
 
 kRevision_1_3_0_en =  "【v1.3.0】 \n" + \
                       "  Feature: \n" + \
-                      "     1. Can save test result into file automatically \n" + \
+                      "     1. Add custom device/board option \n" + \
+                      "     2. Can save test result into text file automatically \n" + \
                       "  Improvement: \n" + \
                       "     1. Tool path can contain spaces \n\n"
 
