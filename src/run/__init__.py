@@ -7,6 +7,7 @@
 
 import runcore
 import rundef
+import debugger_utils
 
-__all__ = ["runcore", "rundef"]
+__all__ = ["runcore", "rundef", "debugger_utils"]
 
