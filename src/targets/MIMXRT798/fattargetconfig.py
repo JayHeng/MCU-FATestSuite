@@ -28,7 +28,8 @@ fatRegStart = 0x5A
 fatRegPass  = 0xA7
 fatRegFail  = 0x9F
 
-loadAppTimeout = 5.0  # seconds
-waitAppTimeout = 10.0 # seconds
+loadAppTimeout    = 5.0  # seconds
+loadAppRetryCount = 3
+waitAppTimeout    = 10.0 # seconds
 
 

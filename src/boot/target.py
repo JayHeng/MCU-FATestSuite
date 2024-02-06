@@ -36,6 +36,7 @@ class Target(object):
         self.fatRegFail = get_dict_default(kwargs, 'fatRegFail', None)
 
         self.loadAppTimeout = get_dict_default(kwargs, 'loadAppTimeout', None)
+        self.loadAppRetryCount = get_dict_default(kwargs, 'loadAppRetryCount', None)
         self.waitAppTimeout = get_dict_default(kwargs, 'waitAppTimeout', None)
 
 

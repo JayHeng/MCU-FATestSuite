@@ -158,6 +158,7 @@ class faTesterRun(uicore.faTesterUi):
                 sp = self._getVal32FromByteArray(initialAppBytes[0:4])
                 pc = self._getVal32FromByteArray(initialAppBytes[4:8])
                 appIsLoaded = False
+                loadAppRetryCount = 0
                 while (not appIsLoaded):
                     #print('Loading app ' + self.fwAppFiles[appIdx] + ' via JLink debugger...')
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
@@ -176,9 +177,9 @@ class faTesterRun(uicore.faTesterUi):
                                 res2 = self.recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
                                 if (res1 != -1):
                                     lastBeg = res1
-                                    self._flushTestResultLog('( PASS ) -- ' + filename)
+                                    self._flushTestResultLog('( RUN-PASS ) ' + filename)
                                     if delayTimeApp != 0:
-                                        self._flushTestResultLog(', <case requires ' + str(delayTimeApp) + 's delay>\n')
+                                        self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
                                         deltaTimeAppStart = time.clock()
                                         deltaTime_app = time.clock() - deltaTimeAppStart
                                         while (deltaTime_app < delayTimeApp):
@@ -189,11 +190,11 @@ class faTesterRun(uicore.faTesterUi):
                                     break
                                 if (res2 != -1):
                                     lastBeg = res2
-                                    self._flushTestResultLog('( FAIL ) -- ' + filename + '\n')
+                                    self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
                                     break
                                 deltaTime_check = time.clock() - deltaTimeStart_check
                                 if (deltaTime_check > self.tgt.waitAppTimeout):
-                                    self._flushTestResultLog('( TIMEOUT ) -- ' + filename + '\n')
+                                    self._flushTestResultLog('( RUN-TIMEOUT ) ' + filename + '\n')
                                     time.sleep(1)
                                     break
                                 time.sleep(0.5)
@@ -207,10 +208,10 @@ class faTesterRun(uicore.faTesterUi):
                                 if status:
                                     resx = resx >> 24
                                     if resx == self.tgt.fatRegPass:
-                                        self._flushTestResultLog('( PASS ) -- ' + filename + '\n')
+                                        self._flushTestResultLog('( RUN-PASS ) ' + filename + '\n')
                                         break
                                     elif resx == self.tgt.fatRegFail:
-                                        self._flushTestResultLog('( FAIL ) -- ' + filename + '\n')
+                                        self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
                                         break
                                 time.sleep(0.5)
                             break
@@ -218,6 +219,10 @@ class faTesterRun(uicore.faTesterUi):
                         deltaTime_load = time.clock() - deltaTimeStart_load
                         if (deltaTime_load > self.tgt.loadAppTimeout):
                             time.sleep(1)
+                            loadAppRetryCount += 1
+                            if loadAppRetryCount > self.tgt.loadAppRetryCount:
+                                appIsLoaded = True
+                                self._flushTestResultLog('( LOAD-FAIL ) ' + filename + '\n')
                             break
                         time.sleep(0.5)
                         ##############################################################
