@@ -8,7 +8,7 @@
 import sys, os
 
 def get_dict_default(d, k, default):
-    if not d.has_key(k):
+    if not (k in d):
         return default
     else:
         return d[k]

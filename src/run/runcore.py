@@ -10,14 +10,25 @@ import sys
 import os
 import time
 import bincopy
-import rundef
-import debugger_utils
+from . import rundef
+from . import debugger_utils
 import boot
 sys.path.append(os.path.abspath(".."))
 from ui import uicore
 from ui import uidef
 from ui import uilang
 from boot import target
+
+def execfile(filepath, globals=None, locals=None):
+    if globals is None:
+        globals = {}
+    globals.update({
+        "__file__": filepath,
+        "__name__": "__main__",
+    })
+    with open(filepath, 'rb') as file:
+        exec(compile(file.read(), filepath, 'exec'), globals, locals)
+
 
 def createTarget(device, exeBinRoot):
     cpu = "MIMXRT798"

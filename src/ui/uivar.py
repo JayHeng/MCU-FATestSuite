@@ -3,8 +3,8 @@
 import sys
 import os
 import json
-import uidef
-import uivar
+from . import uidef
+from . import uivar
 
 g_exeTopRoot = None
 g_hasSubWinBeenOpened = False

@@ -2,8 +2,6 @@
 # -*- coding: UTF-8 -*-
 import wx
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import os
 import time
 import threading
@@ -118,11 +116,11 @@ if __name__ == '__main__':
     g_main_win.Show()
 
     g_task_loadTestCases = threading.Thread(target=g_main_win.task_loadTestCases)
-    g_task_loadTestCases.setDaemon(True)
+    g_task_loadTestCases.daemon=True
     g_task_loadTestCases.start()
 
     g_task_receiveUartData = threading.Thread(target=g_main_win.task_receiveUartData)
-    g_task_receiveUartData.setDaemon(True)
+    g_task_receiveUartData.daemon=True
     g_task_receiveUartData.start()
 
     app.MainLoop()

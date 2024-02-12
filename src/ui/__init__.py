@@ -5,10 +5,10 @@
 # 
 # SPDX-License-Identifier: BSD-3-Clause
 
-import uicore
-import uidef
-import uivar
-import uilang
+from . import uicore
+from . import uidef
+from . import uivar
+from . import uilang
 
 __all__ = ["uicore",
             "uidef",
