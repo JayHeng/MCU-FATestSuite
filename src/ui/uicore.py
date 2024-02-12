@@ -8,14 +8,12 @@
 
 import wx
 import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import os
 import time
 import serial.tools.list_ports
-import uidef
-import uivar
-import uilang
+from . import uidef
+from . import uivar
+from . import uilang
 sys.path.append(os.path.abspath(".."))
 from win import faTesterWin
 
@@ -60,8 +58,12 @@ class faTesterUi(faTesterWin.faTesterWin):
         for i in range(len(comports)):
             comport = list(comports[i])
             ports[i] = comport[0]
-        lastPort = self.m_choice_comPort.GetString(self.m_choice_comPort.GetSelection())
-        lastBaud = self.m_choice_baudrate.GetString(self.m_choice_baudrate.GetSelection())
+        try:
+            lastPort = self.m_choice_comPort.GetString(self.m_choice_comPort.GetSelection())
+            lastBaud = self.m_choice_baudrate.GetString(self.m_choice_baudrate.GetSelection())
+        except:
+            lastPort = ''
+            lastBaud = ''
         self.m_choice_comPort.Clear()
         self.m_choice_comPort.SetItems(ports)
         if lastPort in ports:
@@ -126,8 +128,12 @@ class faTesterUi(faTesterWin.faTesterWin):
             self.toolCommDict['boardSN'] = self.boardSN
 
     def updatePortSetupValue( self ):
-        self.uartComPort = self.m_choice_comPort.GetString(self.m_choice_comPort.GetSelection())
-        self.uartBaudrate = self.m_choice_baudrate.GetString(self.m_choice_baudrate.GetSelection())
+        try:
+            self.uartComPort = self.m_choice_comPort.GetString(self.m_choice_comPort.GetSelection())
+            self.uartBaudrate = self.m_choice_baudrate.GetString(self.m_choice_baudrate.GetSelection())
+        except:
+            self.uartComPort = ''
+            self.uartBaudrate = ''
 
     def setPortSetupValue( self ):
         self.adjustPortSetupValue()
