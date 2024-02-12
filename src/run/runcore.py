@@ -174,12 +174,12 @@ class faTesterRun(uicore.faTesterUi):
                     #print('Loading app ' + self.fwAppFiles[appIdx] + ' via JLink debugger...')
                     self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
                     #print('Loaded app via JLink debugger\r\n')
-                    deltaTimeStart_load = time.clock()
+                    deltaTimeStart_load = time.perf_counter()
                     while True:
                         res0 = self.recvPrintBuf.find(self.tgt.fatLogStart, lastBeg)
                         ##############################################################
                         if (res0 != -1):
-                            deltaTimeStart_check = time.clock()
+                            deltaTimeStart_check = time.perf_counter()
                             appIsLoaded = True
                             delayTimeApp = self._getAppDelayTime(res0 + len(self.tgt.fatLogStart))
                             lastBeg = res0
@@ -191,10 +191,10 @@ class faTesterRun(uicore.faTesterUi):
                                     self._flushTestResultLog('( RUN-PASS ) ' + filename)
                                     if delayTimeApp != 0:
                                         self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
-                                        deltaTimeAppStart = time.clock()
-                                        deltaTime_app = time.clock() - deltaTimeAppStart
+                                        deltaTimeAppStart = time.perf_counter()
+                                        deltaTime_app = time.perf_counter() - deltaTimeAppStart
                                         while (deltaTime_app < delayTimeApp):
-                                            deltaTime_app = time.clock() - deltaTimeAppStart
+                                            deltaTime_app = time.perf_counter() - deltaTimeAppStart
                                             time.sleep(1)
                                     else:
                                         self._flushTestResultLog('\n')
@@ -203,7 +203,7 @@ class faTesterRun(uicore.faTesterUi):
                                     lastBeg = res2
                                     self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
                                     break
-                                deltaTime_check = time.clock() - deltaTimeStart_check
+                                deltaTime_check = time.perf_counter() - deltaTimeStart_check
                                 if (deltaTime_check > self.tgt.waitAppTimeout):
                                     self._flushTestResultLog('( RUN-TIMEOUT ) ' + filename + '\n')
                                     time.sleep(1)
@@ -227,7 +227,7 @@ class faTesterRun(uicore.faTesterUi):
                                 time.sleep(0.5)
                             break
                         ##############################################################
-                        deltaTime_load = time.clock() - deltaTimeStart_load
+                        deltaTime_load = time.perf_counter() - deltaTimeStart_load
                         if (deltaTime_load > self.tgt.loadAppTimeout):
                             time.sleep(1)
                             loadAppRetryCount += 1

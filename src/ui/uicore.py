@@ -140,11 +140,10 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.updatePortSetupValue()
 
     def selectLoaderExe( self ):
-        loaderPath = self.m_filePicker_setLoaderExe.GetPath()
-        self.loaderExe = loaderPath.encode('utf-8').encode("gbk")
+        self.loaderExe = self.m_filePicker_setLoaderExe.GetPath()
         try:
             if os.path.isfile(self.loaderExe):
-                self.toolCommDict['loaderExe'] = loaderPath.encode("utf-8")
+                self.toolCommDict['loaderExe'] = self.loaderExe
             else:
                 pass
         except:
