@@ -99,7 +99,7 @@ class faTesterWin ( wx.Frame ):
 
         wSizer_targetSetup.Add( self.m_staticText_testLoader, 0, wx.ALL, 5 )
 
-        m_choice_testLoaderChoices = [ u"J-Link SWD", u"MCU-Link SWD", u"ROM UART ISP" ]
+        m_choice_testLoaderChoices = [ u"J-Link", u"CMSIS-DAP", u"ROM ISP UART" ]
         self.m_choice_testLoader = wx.Choice( self.m_panel_targetSetup, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), m_choice_testLoaderChoices, 0 )
         self.m_choice_testLoader.SetSelection( 0 )
         wSizer_targetSetup.Add( self.m_choice_testLoader, 0, wx.ALL, 5 )
