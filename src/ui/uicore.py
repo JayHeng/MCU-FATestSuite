@@ -110,6 +110,8 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.m_choice_mcuBoard.Clear()
         if self.mcuDevice == uidef.kMcuDevice_iMXRT700:
             self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT700)
+        elif self.mcuDevice == uidef.kMcuDevice_iMXRT1060:
+            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT1060)
         elif self.mcuDevice == uidef.kMcuDevice_Custom:
             self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_Custom)
         else:

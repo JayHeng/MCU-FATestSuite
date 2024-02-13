@@ -43,6 +43,11 @@ kRevision_1_3_0_en =  "【v1.3.0】 \n" + \
                       "  Improvement: \n" + \
                       "     1. Tool path can contain spaces \n\n"
 
+kRevision_2_0_0_en =  "【v2.0.0】 \n" + \
+                      "  Feature: \n" + \
+                      "     1. Support i.MXRT106x \n" + \
+                      "     2. Support CMSIS-DAP SWD \n\n"
+
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
         'homePage_info':                      ['https://github.com/JayHeng/MCU-FATestSuite.git \n'],
@@ -56,4 +61,5 @@ kMsgLanguageContentDict = {
         'revisionHistory_v1_1_0':             [kRevision_1_1_0_en],
         'revisionHistory_v1_2_0':             [kRevision_1_2_0_en],
         'revisionHistory_v1_3_0':             [kRevision_1_3_0_en],
+        'revisionHistory_v2_0_0':             [kRevision_2_0_0_en],
 }
