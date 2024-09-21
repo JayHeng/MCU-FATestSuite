@@ -1,5 +1,5 @@
 # MCU-FATestSuite
-A flexible FAT tool based on Python2.7+wxPython4.0, it can do flexible FA tests for NXP MCU (i.MXRT...) | 恩智浦MCU板卡出厂验收测试(FAT)一站式工具 
+A flexible FAT tool based on Python3.11+wxPython4.2.1, it can do flexible FA tests for NXP MCU (i.MXRT...) | 恩智浦MCU板卡出厂验收测试(FAT)一站式工具 
 
 ![](./doc/tool_v1.3_view.PNG)
 
@@ -24,6 +24,8 @@ A flexible FAT tool based on Python2.7+wxPython4.0, it can do flexible FA tests 
 ```
 
 ### 2. 用户配置项
+
+配置项在 \src\targets\xxDevice\fattargetconfig.py 文件中，动态加载，无需重新编EXE
 
 ```Python
 # 连接 J-Link 时的配置
