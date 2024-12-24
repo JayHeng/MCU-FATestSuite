@@ -100,12 +100,12 @@ class faTesterRun(uicore.faTesterUi):
         files = os.listdir(fwFolderPath)
         for file in files:
             filename, filetype = os.path.splitext(file)
-            if filetype == '.srec':
+            if filetype == '.srec' or filetype == '.s19':
                 fwAppFiles.append(os.path.join(fwFolderPath, file))
                 caseTestResultMsg += "( TBD ) -- " + filename + "\n"
         self.fwAppFiles = fwAppFiles[:]
         if len(fwAppFiles) == 0:
-            self.showInfoMessage('App Error', 'Cannot find any test case files (.srec)')
+            self.showInfoMessage('App Error', 'Cannot find any test case files (.srec/.s19)')
         else:
             self.appendContentOnMainResWin(caseTestResultMsg)
             self.setButtonProperty("detectTestCases", uidef.kButtonColor_Green)
