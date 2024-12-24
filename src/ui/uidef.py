@@ -24,6 +24,7 @@ kMcuBoard_RT700_EVB1 = 'EVB_Rev.A_SCH-89271'
 kMcuBoard_RT700_EVB2 = 'EVB_Rev.A_SCH-89790'
 kMcuBoardList_iMXRT700   = [kMcuBoard_RT700_EVK1, kMcuBoard_RT700_EVB1, kMcuBoard_RT700_EVB2]
 
+kMcuBoard_RT1060_EVK0  = 'EVK_Rev.X2_SCH-31357'
 kMcuBoard_RT1060_EVK1  = 'EVK_Rev.A_SCH-31357'
 kMcuBoard_RT1060_EVK2  = 'EVK_Rev.A1_SCH-31357'
 kMcuBoard_RT1060_EVK3  = 'EVK_Rev.A2_SCH-31357'
@@ -33,7 +34,7 @@ kMcuBoard_RT1060_EVKC1 = 'EVKC_Rev.A_SCH-55539'
 kMcuBoard_RT106X_EVK1  = 'EVK_Rev.A1_SCH-50780'
 kMcuBoard_RT1060X_OPENART_DUAL = 'OPENART-DUAL_Rev.A_SCH-55323'
 kMcuBoard_RT1060_EVB1  = 'EVB_Rev.A_SCH-34758'
-kMcuBoardList_iMXRT1060   = [kMcuBoard_RT1060_EVK1, kMcuBoard_RT1060_EVK2, kMcuBoard_RT1060_EVK3,
+kMcuBoardList_iMXRT1060   = [kMcuBoard_RT1060_EVK0, kMcuBoard_RT1060_EVK1, kMcuBoard_RT1060_EVK2, kMcuBoard_RT1060_EVK3,
                              kMcuBoard_RT1060_EVKB1, kMcuBoard_RT1060_EVKB2,
                              kMcuBoard_RT1060_EVKC1,
                              kMcuBoard_RT106X_EVK1,
@@ -41,6 +42,10 @@ kMcuBoardList_iMXRT1060   = [kMcuBoard_RT1060_EVK1, kMcuBoard_RT1060_EVK2, kMcuB
                              kMcuBoard_RT1060_EVB1]
 
 kAdvancedSettings_Tool             = 0
+
+kTestLoader_Jlink    = 'J-Link'
+kTestLoader_CmsisDap = 'CMSIS-DAP'
+kTestLoader_RomIsp   = 'ROM ISP UART'
 
 kButtonColor_Yellow = wx.YELLOW
 kButtonColor_White  = wx.WHITE

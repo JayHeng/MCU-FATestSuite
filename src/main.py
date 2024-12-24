@@ -32,11 +32,13 @@ class faTesterMain(runcore.faTesterRun):
     def __init__(self, parent=None):
         runcore.faTesterRun.__init__(self, parent)
         self.isUartOpened = False
+        self._setupMcuTargets()
 
     def _setupMcuTargets( self ):
         self.setTargetSetupValue()
         self.initUi()
         self.createMcuTarget()
+        self.refreshJlinkSN()
 
     def callbackSetMcuDevice( self, event ):
         self._setupMcuTargets()

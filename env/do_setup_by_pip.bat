@@ -1,5 +1,6 @@
 pip.exe install wxPython==4.2.1
 pip.exe install pyocd==0.36.0 
+pip.exe install pylink-square==1.2.0 
 pip.exe install pyserial==3.5
 pip.exe install bincopy==20.0.0
 

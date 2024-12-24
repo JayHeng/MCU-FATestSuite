@@ -17,7 +17,7 @@ import wx.xrc
 class faTesterWin ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MCU FA Test Suite", pos = wx.DefaultPosition, size = wx.Size( 861,550 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MCU FA Test Suite", pos = wx.DefaultPosition, size = wx.Size( 861,571 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -81,7 +81,7 @@ class faTesterWin ( wx.Frame ):
 
         wSizer_targetSetup.Add( self.m_staticText_mcuBoard, 0, wx.ALL, 5 )
 
-        m_choice_mcuBoardChoices = [ u"FOWLP324-EVK_Rev.A" ]
+        m_choice_mcuBoardChoices = []
         self.m_choice_mcuBoard = wx.Choice( self.m_panel_targetSetup, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), m_choice_mcuBoardChoices, 0 )
         self.m_choice_mcuBoard.SetSelection( 0 )
         wSizer_targetSetup.Add( self.m_choice_mcuBoard, 0, wx.ALL, 5 )
@@ -103,6 +103,16 @@ class faTesterWin ( wx.Frame ):
         self.m_choice_testLoader = wx.Choice( self.m_panel_targetSetup, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), m_choice_testLoaderChoices, 0 )
         self.m_choice_testLoader.SetSelection( 0 )
         wSizer_targetSetup.Add( self.m_choice_testLoader, 0, wx.ALL, 5 )
+
+        self.m_staticText_loaderSN = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, u"Loader SN:", wx.DefaultPosition, wx.Size( 75,-1 ), 0 )
+        self.m_staticText_loaderSN.Wrap( -1 )
+
+        wSizer_targetSetup.Add( self.m_staticText_loaderSN, 0, wx.ALL, 5 )
+
+        m_choice_loaderSNChoices = []
+        self.m_choice_loaderSN = wx.Choice( self.m_panel_targetSetup, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), m_choice_loaderSNChoices, 0 )
+        self.m_choice_loaderSN.SetSelection( 0 )
+        wSizer_targetSetup.Add( self.m_choice_loaderSN, 0, wx.ALL, 5 )
 
         self.m_filePicker_setLoaderExe = wx.FilePickerCtrl( self.m_panel_targetSetup, wx.ID_ANY, wx.EmptyString, u"Select a file", u"*.*", wx.DefaultPosition, wx.Size( 236,-1 ), wx.FLP_DEFAULT_STYLE )
         wSizer_targetSetup.Add( self.m_filePicker_setLoaderExe, 0, wx.ALL, 5 )
@@ -223,7 +233,7 @@ class faTesterWin ( wx.Frame ):
         self.m_panel_testResult = wx.Panel( self.m_notebook_testResult, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         wSizer_testResult = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
 
-        self.m_textCtrl_resWin = wx.TextCtrl( self.m_panel_testResult, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 300,420 ), wx.TE_MULTILINE|wx.TE_RICH2 )
+        self.m_textCtrl_resWin = wx.TextCtrl( self.m_panel_testResult, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 300,435 ), wx.TE_MULTILINE|wx.TE_RICH2 )
         wSizer_testResult.Add( self.m_textCtrl_resWin, 0, wx.ALL, 5 )
 
 
@@ -243,7 +253,7 @@ class faTesterWin ( wx.Frame ):
         self.m_panel_recvLog = wx.Panel( self.m_notebook_recvLog, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         wSizer_recvLog = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
 
-        self.m_textCtrl_printWin = wx.TextCtrl( self.m_panel_recvLog, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 220,420 ), wx.TE_MULTILINE|wx.TE_RICH2 )
+        self.m_textCtrl_printWin = wx.TextCtrl( self.m_panel_recvLog, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 220,435 ), wx.TE_MULTILINE|wx.TE_RICH2 )
         wSizer_recvLog.Add( self.m_textCtrl_printWin, 0, wx.ALL, 5 )
 
 
@@ -276,6 +286,7 @@ class faTesterWin ( wx.Frame ):
         self.m_choice_mcuDevice.Bind( wx.EVT_CHOICE, self.callbackSetMcuDevice )
         self.m_choice_mcuBoard.Bind( wx.EVT_CHOICE, self.callbackSetMcuBoard )
         self.m_choice_testLoader.Bind( wx.EVT_CHOICE, self.callbackSetTestLoader )
+        self.m_choice_loaderSN.Bind( wx.EVT_CHOICE, self.callbackSetLoaderSN )
         self.m_filePicker_setLoaderExe.Bind( wx.EVT_FILEPICKER_CHANGED, self.callbackSetLoaderExe )
         self.m_button_detectTestCases.Bind( wx.EVT_BUTTON, self.callbackDetectTestCases )
         self.m_button_runTestCases.Bind( wx.EVT_BUTTON, self.callbackRunTestCases )
@@ -309,6 +320,9 @@ class faTesterWin ( wx.Frame ):
         event.Skip()
 
     def callbackSetTestLoader( self, event ):
+        event.Skip()
+
+    def callbackSetLoaderSN( self, event ):
         event.Skip()
 
     def callbackSetLoaderExe( self, event ):

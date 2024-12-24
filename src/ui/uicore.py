@@ -81,6 +81,18 @@ class faTesterUi(faTesterWin.faTesterWin):
         else:
             self.m_choice_baudrate.SetSelection(0)
 
+    def adjustLoaderSN( self, deviceUids ):
+        try:
+            lastUid = self.m_choice_loaderSN.GetString(self.m_choice_loaderSN.GetSelection())
+        except:
+            lastUid = ''
+        self.m_choice_loaderSN.Clear()
+        self.m_choice_loaderSN.SetItems(deviceUids)
+        if lastUid in deviceUids:
+            self.m_choice_loaderSN.SetSelection(self.m_choice_loaderSN.FindString(lastUid))
+        else:
+            self.m_choice_loaderSN.SetSelection(0)
+
     def _initTargetSetupValue( self ):
         self.m_choice_mcuDevice.Clear()
         self.m_choice_mcuDevice.SetItems(uidef.kMcuDevice_Latest)

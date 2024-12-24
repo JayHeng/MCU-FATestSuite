@@ -12,6 +12,8 @@ import time
 import bincopy
 from . import rundef
 from . import debugger_utils
+from . import debugger_pyocd
+from . import debugger_pylink
 import boot
 sys.path.append(os.path.abspath(".."))
 from ui import uicore
@@ -84,6 +86,12 @@ class faTesterRun(uicore.faTesterUi):
                         self.appendContentOnMainPrintWin(string)
             time.sleep(self.tgt.uartRecvInterval)
 
+    def refreshJlinkSN( self ):
+        if self.testLoader == uidef.kTestLoader_Jlink:
+            self._pyocd = debugger_pyocd.PyocdDebugger()
+            jlinkUid = self._pyocd.getJlinkUid()
+            self.adjustLoaderSN(jlinkUid)
+
     def findTestCases( self ):
         self.resetTestResult(False)
         caseTestResultMsg = ""
@@ -132,109 +140,112 @@ class faTesterRun(uicore.faTesterUi):
         self.appendContentOnMainResWin(log)
 
     def _loadTestCases( self ):
-        if os.path.isfile(self.loaderExe):
-            self.resetTestResult(False)
-            appLen = len(self.fwAppFiles)
-            if appLen == 0:
-                self.showInfoMessage('Flow Error', 'You need to detect test cases first.')
-                return 
-            self.setButtonProperty("runTestCases", uidef.kButtonColor_Yellow)
-            self.recvPrintBuf = ""
-            self.caseResultLog = ""
-            if self.serialPort.isOpen():
-                self.serialPort.reset_input_buffer()
-            else:
-                self.showInfoMessage('Flow Error', 'Com Port is not opened.')
-                return 
-            jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'run', 'debuggers', 'jlink')
-            #print('Creating JLink debugger object...')
+        if not os.path.isfile(self.loaderExe):
+            self.showInfoMessage('Loader Error', 'You need to set Loader EXE first.')
+            return
+        self.resetTestResult(False)
+        appLen = len(self.fwAppFiles)
+        if appLen == 0:
+            self.showInfoMessage('Flow Error', 'You need to detect test cases first.')
+            return 
+        self.setButtonProperty("runTestCases", uidef.kButtonColor_Yellow)
+        self.recvPrintBuf = ""
+        self.caseResultLog = ""
+        if self.serialPort.isOpen():
+            self.serialPort.reset_input_buffer()
+        else:
+            self.showInfoMessage('Flow Error', 'Com Port is not opened.')
+            return 
+        jlinkcmdFolderPath = os.path.join(self.exeTopRoot, 'src', 'run', 'debuggers', 'jlink')
+        #print('Creating JLink debugger object...')
+        if self.testLoader == uidef.kTestLoader_Jlink:
             self._debugger = debugger_utils.createDebugger(debugger_utils.kDebuggerType_JLink, self.tgt.jlinkDevice, self.tgt.jlinkInterface, self.tgt.jlinkSpeedInkHz, self.loaderExe, jlinkcmdFolderPath)
-            self._debugger.open()
-            #print('Created JLink debugger object\r\n')
-            lastBeg = 0
-            for appIdx in range(appLen):
-                self.setButtonProperty("runTestCases", None, 'Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
-                self.appendContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n')
-                srecObj = bincopy.BinFile(str(self.fwAppFiles[appIdx]))
-                filepath, file = os.path.split(self.fwAppFiles[appIdx])
-                filename, filetype = os.path.splitext(file)
-                startAddress = srecObj.minimum_address
-                initialAppBytes = srecObj.as_binary(startAddress, startAddress + 8)
-                sp = self._getVal32FromByteArray(initialAppBytes[0:4])
-                pc = self._getVal32FromByteArray(initialAppBytes[4:8])
-                appIsLoaded = False
-                loadAppRetryCount = 0
-                while (not appIsLoaded):
-                    #print('Loading app ' + self.fwAppFiles[appIdx] + ' via JLink debugger...')
-                    self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
-                    #print('Loaded app via JLink debugger\r\n')
-                    deltaTimeStart_load = time.perf_counter()
-                    while True:
-                        res0 = self.recvPrintBuf.find(self.tgt.fatLogStart, lastBeg)
-                        ##############################################################
-                        if (res0 != -1):
-                            deltaTimeStart_check = time.perf_counter()
-                            appIsLoaded = True
-                            delayTimeApp = self._getAppDelayTime(res0 + len(self.tgt.fatLogStart))
-                            lastBeg = res0
-                            while True:
-                                res1 = self.recvPrintBuf.find(self.tgt.fatLogPass, lastBeg)
-                                res2 = self.recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
-                                if (res1 != -1):
-                                    lastBeg = res1
-                                    self._flushTestResultLog('( RUN-PASS ) ' + filename)
-                                    if delayTimeApp != 0:
-                                        self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
-                                        deltaTimeAppStart = time.perf_counter()
+        else:
+            return
+        self._debugger.open()
+        #print('Created JLink debugger object\r\n')
+        lastBeg = 0
+        for appIdx in range(appLen):
+            self.setButtonProperty("runTestCases", None, 'Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
+            self.appendContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n')
+            srecObj = bincopy.BinFile(str(self.fwAppFiles[appIdx]))
+            filepath, file = os.path.split(self.fwAppFiles[appIdx])
+            filename, filetype = os.path.splitext(file)
+            startAddress = srecObj.minimum_address
+            initialAppBytes = srecObj.as_binary(startAddress, startAddress + 8)
+            sp = self._getVal32FromByteArray(initialAppBytes[0:4])
+            pc = self._getVal32FromByteArray(initialAppBytes[4:8])
+            appIsLoaded = False
+            loadAppRetryCount = 0
+            while (not appIsLoaded):
+                #print('Loading app ' + self.fwAppFiles[appIdx] + ' via JLink debugger...')
+                self._debugger.JumpToApp(self.fwAppFiles[appIdx], sp, pc, None)
+                #print('Loaded app via JLink debugger\r\n')
+                deltaTimeStart_load = time.perf_counter()
+                while True:
+                    res0 = self.recvPrintBuf.find(self.tgt.fatLogStart, lastBeg)
+                    ##############################################################
+                    if (res0 != -1):
+                        deltaTimeStart_check = time.perf_counter()
+                        appIsLoaded = True
+                        delayTimeApp = self._getAppDelayTime(res0 + len(self.tgt.fatLogStart))
+                        lastBeg = res0
+                        while True:
+                            res1 = self.recvPrintBuf.find(self.tgt.fatLogPass, lastBeg)
+                            res2 = self.recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
+                            if (res1 != -1):
+                                lastBeg = res1
+                                self._flushTestResultLog('( RUN-PASS ) ' + filename)
+                                if delayTimeApp != 0:
+                                    self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
+                                    deltaTimeAppStart = time.perf_counter()
+                                    deltaTime_app = time.perf_counter() - deltaTimeAppStart
+                                    while (deltaTime_app < delayTimeApp):
                                         deltaTime_app = time.perf_counter() - deltaTimeAppStart
-                                        while (deltaTime_app < delayTimeApp):
-                                            deltaTime_app = time.perf_counter() - deltaTimeAppStart
-                                            time.sleep(1)
-                                    else:
-                                        self._flushTestResultLog('\n')
+                                        time.sleep(1)
+                                else:
+                                    self._flushTestResultLog('\n')
+                                break
+                            if (res2 != -1):
+                                lastBeg = res2
+                                self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
+                                break
+                            deltaTime_check = time.perf_counter() - deltaTimeStart_check
+                            if (deltaTime_check > self.tgt.waitAppTimeout):
+                                self._flushTestResultLog('( RUN-TIMEOUT ) ' + filename + '\n')
+                                time.sleep(1)
+                                break
+                            time.sleep(0.5)
+                        break
+                    ##############################################################
+                    #status, res0 = self._debugger.readMem32(self.tgt.fatRegAddr)
+                    if False: #status and ((res0 & 0xFF) == self.tgt.fatRegStart):
+                        appIsLoaded = True
+                        while True:
+                            status, resx = self._debugger.readMem32(self.tgt.fatRegAddr)
+                            if status:
+                                resx = resx >> 24
+                                if resx == self.tgt.fatRegPass:
+                                    self._flushTestResultLog('( RUN-PASS ) ' + filename + '\n')
                                     break
-                                if (res2 != -1):
-                                    lastBeg = res2
+                                elif resx == self.tgt.fatRegFail:
                                     self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
                                     break
-                                deltaTime_check = time.perf_counter() - deltaTimeStart_check
-                                if (deltaTime_check > self.tgt.waitAppTimeout):
-                                    self._flushTestResultLog('( RUN-TIMEOUT ) ' + filename + '\n')
-                                    time.sleep(1)
-                                    break
-                                time.sleep(0.5)
-                            break
-                        ##############################################################
-                        #status, res0 = self._debugger.readMem32(self.tgt.fatRegAddr)
-                        if False: #status and ((res0 & 0xFF) == self.tgt.fatRegStart):
+                            time.sleep(0.5)
+                        break
+                    ##############################################################
+                    deltaTime_load = time.perf_counter() - deltaTimeStart_load
+                    if (deltaTime_load > self.tgt.loadAppTimeout):
+                        time.sleep(1)
+                        loadAppRetryCount += 1
+                        if loadAppRetryCount > self.tgt.loadAppRetryCount:
                             appIsLoaded = True
-                            while True:
-                                status, resx = self._debugger.readMem32(self.tgt.fatRegAddr)
-                                if status:
-                                    resx = resx >> 24
-                                    if resx == self.tgt.fatRegPass:
-                                        self._flushTestResultLog('( RUN-PASS ) ' + filename + '\n')
-                                        break
-                                    elif resx == self.tgt.fatRegFail:
-                                        self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
-                                        break
-                                time.sleep(0.5)
-                            break
-                        ##############################################################
-                        deltaTime_load = time.perf_counter() - deltaTimeStart_load
-                        if (deltaTime_load > self.tgt.loadAppTimeout):
-                            time.sleep(1)
-                            loadAppRetryCount += 1
-                            if loadAppRetryCount > self.tgt.loadAppRetryCount:
-                                appIsLoaded = True
-                                self._flushTestResultLog('( LOAD-FAIL ) ' + filename + '\n')
-                            break
-                        time.sleep(0.5)
-                        ##############################################################
-            self.setButtonProperty("runTestCases", uidef.kButtonColor_White, 'Run Test Cases')
-            #self.flushContentOnMainPrintWin()
-        else:
-            self.showInfoMessage('Loader Error', 'You need to set Loader EXE first.')
+                            self._flushTestResultLog('( LOAD-FAIL ) ' + filename + '\n')
+                        break
+                    time.sleep(0.5)
+                    ##############################################################
+        self.setButtonProperty("runTestCases", uidef.kButtonColor_White, 'Run Test Cases')
+        #self.flushContentOnMainPrintWin()
 
     def _saveTestResult( self ):
         self.updateBoardSN()

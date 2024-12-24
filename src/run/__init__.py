@@ -8,6 +8,8 @@
 from . import runcore
 from . import rundef
 from . import debugger_utils
+from . import debugger_pylink
+from . import debugger_pyocd
 
-__all__ = ["runcore", "rundef", "debugger_utils"]
+__all__ = ["runcore", "rundef", "debugger_utils", "debugger_pylink", "debugger_pyocd"]
 
