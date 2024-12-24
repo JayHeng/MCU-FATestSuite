@@ -8,16 +8,20 @@ import wx
 import sys, os
 
 kMcuDevice_Custom    = 'CustomDevice'
+kMcuDevice_iMXRT500  = 'i.MXRT5xx'
 kMcuDevice_iMXRT700  = 'i.MXRT7xx'
 kMcuDevice_iMXRT1060 = 'i.MXRT106x'
 
 kMcuDevice_v1_0      = [kMcuDevice_iMXRT700]
 kMcuDevice_v1_3      = [kMcuDevice_iMXRT700, kMcuDevice_Custom]
-kMcuDevice_v2_0      = [kMcuDevice_iMXRT700, kMcuDevice_iMXRT1060, kMcuDevice_Custom]
+kMcuDevice_v2_0      = [kMcuDevice_iMXRT500, kMcuDevice_iMXRT700, kMcuDevice_iMXRT1060, kMcuDevice_Custom]
 kMcuDevice_Latest    = kMcuDevice_v2_0
 
 kMcuBoard_Custom     = 'CustomBoard'
 kMcuBoardList_Custom     = [kMcuBoard_Custom]
+
+kMcuBoard_RT500_EVK1 = 'EVK_Rev.D_SCH-45800'
+kMcuBoardList_iMXRT500   = [kMcuBoard_RT500_EVK1]
 
 kMcuBoard_RT700_EVK1 = 'EVK_Rev.A_SCH-89280'
 kMcuBoard_RT700_EVB1 = 'EVB_Rev.A_SCH-89271'

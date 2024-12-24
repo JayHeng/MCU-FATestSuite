@@ -45,8 +45,9 @@ kRevision_1_3_0_en =  "【v1.3.0】 \n" + \
 
 kRevision_2_0_0_en =  "【v2.0.0】 \n" + \
                       "  Feature: \n" + \
-                      "     1. Support i.MXRT106x \n" + \
-                      "     2. Support CMSIS-DAP SWD \n\n"
+                      "     1. Support i.MXRT5xx \n" + \
+                      "     2. Support i.MXRT106x \n" + \
+                      "     3. Support CMSIS-DAP SWD \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],

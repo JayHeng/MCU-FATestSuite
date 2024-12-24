@@ -1,8 +1,0 @@
-r
-h
-LoadFile "D:\github_repo_jay\MCU-FATestSuite\src\targets\i.MXRT7xx\EVK_Rev.A_SCH-89280\led_blinky_print_timeout_core0.srec"
-wreg MSP 20200000
-wreg PSP 20200000
-SetPC 00083001
-g
-q
