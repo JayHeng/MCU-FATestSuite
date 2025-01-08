@@ -28,6 +28,7 @@ class faTesterUi(faTesterWin.faTesterWin):
             self.exeTopRoot = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
         uivar.setRuntimeSettings(None, self.exeTopRoot)
         uivar.initVar(os.path.join(self.exeTopRoot, 'bin', 'fat_settings.json'))
+        self.srcTgtRoot = os.path.join(self.exeTopRoot, 'src', 'targets')
         toolCommDict = uivar.getAdvancedSettings(uidef.kAdvancedSettings_Tool)
         self.toolCommDict = toolCommDict.copy()
         self.mcuDevice = None
@@ -118,18 +119,30 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.mcuBoard = self.m_choice_mcuBoard.GetString(self.m_choice_mcuBoard.GetSelection())
         self.toolCommDict['mcuBoard'] = self.mcuBoard
 
+    def _getFolders( self, path ):
+        folders = []
+        files = os.listdir(path)
+        for file in files:
+            if os.path.isdir(os.path.join(path, file)):
+                folders.append(file)
+        return folders
+
     def _refreshMcuBoardList( self ):
         self.m_choice_mcuBoard.Clear()
-        if self.mcuDevice == uidef.kMcuDevice_iMXRT500:
-            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT500)
-        elif self.mcuDevice == uidef.kMcuDevice_iMXRT700:
-            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT700)
-        elif self.mcuDevice == uidef.kMcuDevice_iMXRT1060:
-            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT1060)
-        elif self.mcuDevice == uidef.kMcuDevice_Custom:
-            self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_Custom)
-        else:
-            pass
+        #if self.mcuDevice == uidef.kMcuDevice_iMXRT500:
+        #    self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT500)
+        #elif self.mcuDevice == uidef.kMcuDevice_iMXRT700:
+        #    self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT700)
+        #elif self.mcuDevice == uidef.kMcuDevice_iMXRT1060:
+        #    self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_iMXRT1060)
+        #elif self.mcuDevice == uidef.kMcuDevice_Custom:
+        #    self.m_choice_mcuBoard.SetItems(uidef.kMcuBoardList_Custom)
+        #else:
+        #    pass
+        if self.mcuDevice != None:
+            devRoot = os.path.join(self.srcTgtRoot, self.mcuDevice)
+            boards = self._getFolders(devRoot)
+            self.m_choice_mcuBoard.SetItems(boards)
         retSel = self.m_choice_mcuBoard.FindString(self.toolCommDict['mcuBoard'])
         if retSel != wx.NOT_FOUND:
             self.m_choice_mcuBoard.SetSelection(retSel)
