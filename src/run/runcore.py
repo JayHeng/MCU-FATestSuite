@@ -81,9 +81,12 @@ class faTesterRun(uicore.faTesterUi):
                     num = self.serialPort.inWaiting()
                     if num != 0:
                         data = self.serialPort.read(num)
-                        string = data.decode()
-                        self.recvPrintBuf += string
-                        self.appendContentOnMainPrintWin(string)
+                        try:
+                            string = data.decode()
+                            self.recvPrintBuf += string
+                            self.appendContentOnMainPrintWin(string)
+                        except:
+                            pass
             time.sleep(self.tgt.uartRecvInterval)
 
     def refreshJlinkSN( self ):
