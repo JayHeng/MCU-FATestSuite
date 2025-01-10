@@ -47,8 +47,11 @@ kRevision_2_0_0_en =  "【v2.0.0】 \n" + \
                       "  Feature: \n" + \
                       "     1. Support i.MXRT5xx \n" + \
                       "     2. Support i.MXRT106x \n" + \
+                      "     3. Add loader type and SN option into UI \n" + \
                       "  Improvement: \n" + \
-                      "     1. Support user-defined board folder \n\n"
+                      "     1. Support user-defined board folder \n" + \
+                      "  Bugfix: \n" + \
+                      "     1. Sometimes load app fail due to incorrect UART log decoding \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
