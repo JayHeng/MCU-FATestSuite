@@ -82,7 +82,10 @@ class faTesterRun(uicore.faTesterUi):
                     if num != 0:
                         data = self.serialPort.read(num)
                         try:
-                            string = data.decode()
+                            string = ''
+                            for i in range(len(data)):
+                                string += chr(data[i])
+                            #string = data.decode()
                             self.recvPrintBuf += string
                             self.appendContentOnMainPrintWin(string)
                         except:
