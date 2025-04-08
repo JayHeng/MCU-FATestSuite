@@ -11,11 +11,13 @@ kMcuDevice_Custom    = 'CustomDevice'
 kMcuDevice_iMXRT500  = 'i.MXRT5xx'
 kMcuDevice_iMXRT700  = 'i.MXRT7xx'
 kMcuDevice_iMXRT1060 = 'i.MXRT106x'
+kMcuDevice_iMXRT1180 = 'i.MXRT118x'
 
 kMcuDevice_v1_0      = [kMcuDevice_iMXRT700]
 kMcuDevice_v1_3      = [kMcuDevice_iMXRT700, kMcuDevice_Custom]
 kMcuDevice_v2_0      = [kMcuDevice_iMXRT500, kMcuDevice_iMXRT700, kMcuDevice_iMXRT1060, kMcuDevice_Custom]
-kMcuDevice_Latest    = kMcuDevice_v2_0
+kMcuDevice_v2_1      = [kMcuDevice_iMXRT500, kMcuDevice_iMXRT700, kMcuDevice_iMXRT1060, kMcuDevice_iMXRT1180, kMcuDevice_Custom]
+kMcuDevice_Latest    = kMcuDevice_v2_1
 
 kMcuBoard_Custom     = 'CustomBoard'
 kMcuBoardList_Custom     = [kMcuBoard_Custom]
@@ -44,6 +46,9 @@ kMcuBoardList_iMXRT1060   = [kMcuBoard_RT1060_EVK0, kMcuBoard_RT1060_EVK1, kMcuB
                              kMcuBoard_RT106X_EVK1,
                              kMcuBoard_RT1060X_OPENART_DUAL,
                              kMcuBoard_RT1060_EVB1]
+
+kMcuBoard_RT1180_EVK0 = 'EVK_Rev.C3_SCH-50577'
+kMcuBoardList_iMXRT1180   = [kMcuBoard_RT1180_EVK0]
 
 kAdvancedSettings_Tool             = 0
 
