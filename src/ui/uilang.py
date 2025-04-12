@@ -55,7 +55,8 @@ kRevision_2_0_0_en =  "【v2.0.0】 \n" + \
 
 kRevision_2_1_0_en =  "【v2.1.0】 \n" + \
                       "  Feature: \n" + \
-                      "     1. Support i.MXRT118x \n\n"
+                      "     1. Support i.MXRT105x \n" + \
+                      "     2. Support i.MXRT118x \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
