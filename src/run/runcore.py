@@ -10,6 +10,7 @@ import sys
 import os
 import time
 import bincopy
+from openpyxl import Workbook
 from . import rundef
 from . import debugger_utils
 from . import debugger_pyocd
@@ -102,6 +103,7 @@ class faTesterRun(uicore.faTesterUi):
         self.resetTestResult(False)
         caseTestResultMsg = ""
         fwAppFiles = []
+        fwAppNames = []
         fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', self.tgt.cpu, self.mcuBoard)
         files = os.listdir(fwFolderPath)
         for file in files:
@@ -109,7 +111,9 @@ class faTesterRun(uicore.faTesterUi):
             if filetype == '.srec' or filetype == '.s19':
                 fwAppFiles.append(os.path.join(fwFolderPath, file))
                 caseTestResultMsg += "( TBD ) -- " + filename + "\n"
+                fwAppNames.append(filename)
         self.fwAppFiles = fwAppFiles[:]
+        self.fwAppNames = fwAppNames[:]
         if len(fwAppFiles) == 0:
             self.showInfoMessage('App Error', 'Cannot find any test case files (.srec/.s19)')
         else:
@@ -157,6 +161,7 @@ class faTesterRun(uicore.faTesterUi):
         self.setButtonProperty("runTestCases", uidef.kButtonColor_Yellow)
         self.recvPrintBuf = ""
         self.caseResultLog = ""
+        fwAppResults = []
         if self.serialPort.isOpen():
             self.serialPort.reset_input_buffer()
         else:
@@ -201,7 +206,8 @@ class faTesterRun(uicore.faTesterUi):
                             res2 = self.recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
                             if (res1 != -1):
                                 lastBeg = res1
-                                self._flushTestResultLog('( RUN-PASS ) ' + filename)
+                                self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename)
+                                fwAppResults.append(rundef.kTestResult_RunPass)
                                 if delayTimeApp != 0:
                                     self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
                                     deltaTimeAppStart = time.perf_counter()
@@ -214,11 +220,13 @@ class faTesterRun(uicore.faTesterUi):
                                 break
                             if (res2 != -1):
                                 lastBeg = res2
-                                self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
+                                self._flushTestResultLog('( ' + rundef.kTestResult_RunFail + ' ) ' + filename + '\n')
+                                fwAppResults.append(rundef.kTestResult_RunFail)
                                 break
                             deltaTime_check = time.perf_counter() - deltaTimeStart_check
                             if (deltaTime_check > self.tgt.waitAppTimeout):
-                                self._flushTestResultLog('( RUN-TIMEOUT ) ' + filename + '\n')
+                                self._flushTestResultLog('( ' + rundef.kTestResult_RunTimeout + ' ) ' + filename + '\n')
+                                fwAppResults.append(rundef.kTestResult_RunTimeout)
                                 time.sleep(1)
                                 break
                             time.sleep(0.5)
@@ -232,10 +240,12 @@ class faTesterRun(uicore.faTesterUi):
                             if status:
                                 resx = resx >> 24
                                 if resx == self.tgt.fatRegPass:
-                                    self._flushTestResultLog('( RUN-PASS ) ' + filename + '\n')
+                                    self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename + '\n')
+                                    fwAppResults.append(rundef.kTestResult_RunPass)
                                     break
                                 elif resx == self.tgt.fatRegFail:
-                                    self._flushTestResultLog('( RUN-FAIL ) ' + filename + '\n')
+                                    self._flushTestResultLog('( ' + rundef.kTestResult_RunFail + ' ) ' + filename + '\n')
+                                    fwAppResults.append(rundef.kTestResult_RunFail)
                                     break
                             time.sleep(0.5)
                         break
@@ -246,16 +256,18 @@ class faTesterRun(uicore.faTesterUi):
                         loadAppRetryCount += 1
                         if loadAppRetryCount > self.tgt.loadAppRetryCount:
                             appIsLoaded = True
-                            self._flushTestResultLog('( LOAD-FAIL ) ' + filename + '\n')
+                            self._flushTestResultLog('( ' + rundef.kTestResult_LoadFail + ' ) ' + filename + '\n')
+                            fwAppResults.append(rundef.kTestResult_LoadFail)
                         break
                     time.sleep(0.5)
                     ##############################################################
         self.setButtonProperty("runTestCases", uidef.kButtonColor_White, 'Run Test Cases')
+        self.fwAppResults = fwAppResults[:]
         #self.flushContentOnMainPrintWin()
 
-    def _saveTestResult( self ):
+    def _saveTestResultToText( self ):
         self.updateBoardSN()
-        resFilename = os.path.join(self.exeTopRoot, 'bin', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())) + '.txt')
+        resFilename = os.path.join(self.exeTopRoot, 'report', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())) + '.txt')
         with open(resFilename, 'w+') as fileObj:
             fileObj.write("\r\n-----------case result log--------------\r\n")
             fileObj.write(self.caseResultLog)
@@ -263,10 +275,26 @@ class faTesterRun(uicore.faTesterUi):
             fileObj.write(self.recvPrintBuf)
             fileObj.close()
 
+    def _saveTestResultToExcel( self ):
+        self.updateBoardSN()
+        resFilename = os.path.join(self.exeTopRoot, 'report', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())) + '.xlsx')
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Test Results"
+        ws['A1'] = 'Name'
+        ws['B1'] = 'Result'
+        for i in range(len(self.fwAppNames)):
+            ws.cell(row=2 + i, column=1).value = self.fwAppNames[i]
+            ws.cell(row=2 + i, column=2).value = self.fwAppResults[i]
+        wb.save(resFilename)
+        wb.close()
+
     def task_loadTestCases( self ):
         while True:
             if self.isLoadTestCasesTaskPending:
                 self._loadTestCases()
-                self._saveTestResult()
+                self._saveTestResultToText()
+                self._saveTestResultToExcel()
+                self._flushTestResultLog('\r\nDONE')
                 self.isLoadTestCasesTaskPending = False
             time.sleep(1)

@@ -41,6 +41,8 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.setMcuBoardValue()
         self.initUi()
         self.fwAppFiles = []
+        self.fwAppNames = []
+        self.fwAppResults = []
         self.isLoadTestCasesTaskPending = False
         self.enableUartToRecvData = False
         self.serialPort = serial.Serial()

@@ -3,5 +3,6 @@ pip.exe install pyocd==0.36.0
 pip.exe install pylink-square==1.2.0 
 pip.exe install pyserial==3.5
 pip.exe install bincopy==20.0.0
+pip.exe install openpyxl==3.1.5
 
 pip.exe install PyInstaller==6.4.0
