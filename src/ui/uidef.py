@@ -8,11 +8,11 @@ import wx
 import sys, os
 
 kMcuDevice_Custom    = 'CustomDevice'
-kMcuDevice_iMXRT500  = 'i.MXRT5xx'
-kMcuDevice_iMXRT700  = 'i.MXRT7xx'
-kMcuDevice_iMXRT1050 = 'i.MXRT105x'
-kMcuDevice_iMXRT1060 = 'i.MXRT106x'
-kMcuDevice_iMXRT1180 = 'i.MXRT118x'
+kMcuDevice_iMXRT500  = 'MIMXRT500'
+kMcuDevice_iMXRT700  = 'MIMXRT700'
+kMcuDevice_iMXRT1050 = 'MIMXRT1050'
+kMcuDevice_iMXRT1060 = 'MIMXRT1060'
+kMcuDevice_iMXRT1180 = 'MIMXRT1180'
 
 kMcuDevice_v1_0      = [kMcuDevice_iMXRT700]
 kMcuDevice_v1_3      = [kMcuDevice_iMXRT700, kMcuDevice_Custom]

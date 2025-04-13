@@ -7,7 +7,7 @@
 
 import sys, os
 
-cpu = 'i.MXRT118x'
+cpu = 'MIMXRT1180'
 
 jlinkDevice     = 'MIMXRT1189XXX8_M33'
 jlinkInterface  = 'SWD'
