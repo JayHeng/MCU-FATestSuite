@@ -265,9 +265,15 @@ class faTesterRun(uicore.faTesterUi):
         self.fwAppResults = fwAppResults[:]
         #self.flushContentOnMainPrintWin()
 
-    def _saveTestResultToText( self ):
+    def _areAllTestCasesPassed(self):
+        for i in range(len(self.fwAppResults)):
+            if self.fwAppResults[i] != rundef.kTestResult_RunPass:
+                return False
+        return True
+
+    def _saveTestResultToText( self, reportName ):
         self.updateBoardSN()
-        resFilename = os.path.join(self.exeTopRoot, 'report', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())) + '.txt')
+        resFilename = reportName + '.txt'
         with open(resFilename, 'w+') as fileObj:
             fileObj.write("\r\n-----------case result log--------------\r\n")
             fileObj.write(self.caseResultLog)
@@ -275,9 +281,9 @@ class faTesterRun(uicore.faTesterUi):
             fileObj.write(self.recvPrintBuf)
             fileObj.close()
 
-    def _saveTestResultToExcel( self ):
+    def _saveTestResultToExcel( self, reportName ):
         self.updateBoardSN()
-        resFilename = os.path.join(self.exeTopRoot, 'report', self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_test_result_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())) + '.xlsx')
+        resFilename = reportName + '.xlsx'
         wb = Workbook()
         ws = wb.active
         ws.title = "Test Results"
@@ -293,8 +299,12 @@ class faTesterRun(uicore.faTesterUi):
         while True:
             if self.isLoadTestCasesTaskPending:
                 self._loadTestCases()
-                self._saveTestResultToText()
-                self._saveTestResultToExcel()
+                finalResult = 'FAIL'
+                if self._areAllTestCasesPassed():
+                    finalResult = 'PASS'
+                reportName = os.path.join(self.exeTopRoot, 'report', finalResult + "_test_report_" + self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())))
+                self._saveTestResultToText(reportName)
+                self._saveTestResultToExcel(reportName)
                 self._flushTestResultLog('\r\nDONE')
                 self.isLoadTestCasesTaskPending = False
             time.sleep(1)
