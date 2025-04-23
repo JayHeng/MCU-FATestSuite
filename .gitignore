@@ -13,6 +13,12 @@ __pycache__
 
 /.idea
 
-
+/doc
+/releases
+/report
+*.srec
+*.s19
+*.json
+*.jlink
 
 
