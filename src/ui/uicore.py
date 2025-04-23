@@ -117,9 +117,25 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.testLoader = self.m_choice_testLoader.GetString(self.m_choice_testLoader.GetSelection())
         self.toolCommDict['testLoader'] = self.m_choice_testLoader.GetSelection()
 
+
+    def setBoardPictureOnSize( self, boardPath ):
+        if os.path.isfile(boardPath):
+            W, H = self.m_bitmap_board.Size
+            if W > H:
+                NewW = W
+                NewH = int(W * H / W)
+            else:
+                NewH = H
+                NewW = int(H * W / H)
+            img = wx.Image(boardPath, wx.BITMAP_TYPE_ANY)
+            img = img.Scale(NewW, NewH)
+            self.m_bitmap_board.SetBitmap(wx.BitmapFromImage(img))
+
     def setMcuBoardValue( self ):
         self.mcuBoard = self.m_choice_mcuBoard.GetString(self.m_choice_mcuBoard.GetSelection())
         self.toolCommDict['mcuBoard'] = self.mcuBoard
+        boardPicPath = devRoot = os.path.join(self.srcTgtRoot, self.mcuDevice, self.mcuBoard, 'BlockDiagram.png')
+        self.setBoardPictureOnSize(boardPicPath)
 
     def _getFolders( self, path ):
         folders = []

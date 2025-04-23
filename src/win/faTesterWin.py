@@ -17,7 +17,7 @@ import wx.xrc
 class faTesterWin ( wx.Frame ):
 
     def __init__( self, parent ):
-        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MCU FA Test Suite", pos = wx.DefaultPosition, size = wx.Size( 861,571 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"MCU FA Test Suite", pos = wx.DefaultPosition, size = wx.Size( 984,613 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
@@ -138,7 +138,7 @@ class faTesterWin ( wx.Frame ):
         self.m_button_runTestCases = wx.Button( self.m_panel_targetSetup, wx.ID_ANY, u"Run Test Cases", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
         wSizer_targetSetup.Add( self.m_button_runTestCases, 0, wx.ALL, 5 )
 
-        self.m_staticText_null3Setup = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 20,-1 ), 0 )
+        self.m_staticText_null3Setup = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 35,-1 ), 0 )
         self.m_staticText_null3Setup.Wrap( -1 )
 
         wSizer_targetSetup.Add( self.m_staticText_null3Setup, 0, wx.ALL, 5 )
@@ -147,6 +147,19 @@ class faTesterWin ( wx.Frame ):
         self.m_staticText_null4Setup.Wrap( -1 )
 
         wSizer_targetSetup.Add( self.m_staticText_null4Setup, 0, wx.ALL, 5 )
+
+        self.m_button_pauseResumeTest = wx.Button( self.m_panel_targetSetup, wx.ID_ANY, u"Pause Testing", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
+        wSizer_targetSetup.Add( self.m_button_pauseResumeTest, 0, wx.ALL, 5 )
+
+        self.m_staticText_null3Setup = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 20,-1 ), 0 )
+        self.m_staticText_null3Setup.Wrap( -1 )
+
+        wSizer_targetSetup.Add( self.m_staticText_null3Setup, 0, wx.ALL, 5 )
+
+        self.m_staticText_null6Setup = wx.StaticText( self.m_panel_targetSetup, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 35,-1 ), 0 )
+        self.m_staticText_null6Setup.Wrap( -1 )
+
+        wSizer_targetSetup.Add( self.m_staticText_null6Setup, 0, wx.ALL, 5 )
 
         self.m_button_resetTestResult = wx.Button( self.m_panel_targetSetup, wx.ID_ANY, u"Reset Test Result", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
         wSizer_targetSetup.Add( self.m_button_resetTestResult, 0, wx.ALL, 5 )
@@ -227,13 +240,15 @@ class faTesterWin ( wx.Frame ):
 
         wSizer_func.Add( bSizer_setup, 1, wx.EXPAND, 5 )
 
+        wSizer_test = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
+
         bSizer_testResult = wx.BoxSizer( wx.VERTICAL )
 
         self.m_notebook_testResult = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
         self.m_panel_testResult = wx.Panel( self.m_notebook_testResult, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         wSizer_testResult = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
 
-        self.m_textCtrl_resWin = wx.TextCtrl( self.m_panel_testResult, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 300,435 ), wx.TE_MULTILINE|wx.TE_RICH2 )
+        self.m_textCtrl_resWin = wx.TextCtrl( self.m_panel_testResult, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 320,180 ), wx.TE_MULTILINE|wx.TE_RICH2 )
         wSizer_testResult.Add( self.m_textCtrl_resWin, 0, wx.ALL, 5 )
 
 
@@ -245,7 +260,7 @@ class faTesterWin ( wx.Frame ):
         bSizer_testResult.Add( self.m_notebook_testResult, 1, wx.EXPAND |wx.ALL, 5 )
 
 
-        wSizer_func.Add( bSizer_testResult, 1, wx.EXPAND, 5 )
+        wSizer_test.Add( bSizer_testResult, 1, wx.EXPAND, 5 )
 
         bSizer_recvLog = wx.BoxSizer( wx.VERTICAL )
 
@@ -253,7 +268,7 @@ class faTesterWin ( wx.Frame ):
         self.m_panel_recvLog = wx.Panel( self.m_notebook_recvLog, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
         wSizer_recvLog = wx.WrapSizer( wx.HORIZONTAL, wx.WRAPSIZER_DEFAULT_FLAGS )
 
-        self.m_textCtrl_printWin = wx.TextCtrl( self.m_panel_recvLog, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 220,435 ), wx.TE_MULTILINE|wx.TE_RICH2 )
+        self.m_textCtrl_printWin = wx.TextCtrl( self.m_panel_recvLog, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( 320,180 ), wx.TE_MULTILINE|wx.TE_RICH2 )
         wSizer_recvLog.Add( self.m_textCtrl_printWin, 0, wx.ALL, 5 )
 
 
@@ -265,7 +280,13 @@ class faTesterWin ( wx.Frame ):
         bSizer_recvLog.Add( self.m_notebook_recvLog, 1, wx.EXPAND |wx.ALL, 5 )
 
 
-        wSizer_func.Add( bSizer_recvLog, 1, wx.EXPAND, 5 )
+        wSizer_test.Add( bSizer_recvLog, 1, wx.EXPAND, 5 )
+
+        self.m_bitmap_board = wx.StaticBitmap( self, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.Size( 680,280 ), 0 )
+        wSizer_test.Add( self.m_bitmap_board, 0, wx.ALL, 5 )
+
+
+        wSizer_func.Add( wSizer_test, 1, wx.EXPAND, 5 )
 
 
         bSizer_win.Add( wSizer_func, 1, wx.EXPAND, 5 )
@@ -290,6 +311,7 @@ class faTesterWin ( wx.Frame ):
         self.m_filePicker_setLoaderExe.Bind( wx.EVT_FILEPICKER_CHANGED, self.callbackSetLoaderExe )
         self.m_button_detectTestCases.Bind( wx.EVT_BUTTON, self.callbackDetectTestCases )
         self.m_button_runTestCases.Bind( wx.EVT_BUTTON, self.callbackRunTestCases )
+        self.m_button_pauseResumeTest.Bind( wx.EVT_BUTTON, self.callbackPauseResumeTest )
         self.m_button_resetTestResult.Bind( wx.EVT_BUTTON, self.callbackResetTestResult )
         self.m_button_open.Bind( wx.EVT_BUTTON, self.callbackOpenUart )
 
@@ -332,6 +354,9 @@ class faTesterWin ( wx.Frame ):
         event.Skip()
 
     def callbackRunTestCases( self, event ):
+        event.Skip()
+
+    def callbackPauseResumeTest( self, event ):
         event.Skip()
 
     def callbackResetTestResult( self, event ):
