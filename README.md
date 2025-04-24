@@ -1,7 +1,7 @@
 # MCU-FATestSuite
 A flexible FAT tool based on Python3.11+wxPython4.2.1, it can do flexible FA tests for NXP MCU (i.MXRT...) | 恩智浦MCU板卡出厂验收测试(FAT)一站式工具 
 
-![](./doc/tool_v2.1_view.PNG)
+![](/doc/tool_v2.1_view.png)
 
 ### 1. 使用步骤
 ```text
