@@ -104,6 +104,7 @@ class faTesterRun(uicore.faTesterUi):
         caseTestResultMsg = ""
         fwAppFiles = []
         fwAppNames = []
+        fwAppPictures = []
         fwFolderPath = os.path.join(self.exeTopRoot, 'src', 'targets', self.tgt.cpu, self.mcuBoard)
         files = os.listdir(fwFolderPath)
         for file in files:
@@ -112,8 +113,10 @@ class faTesterRun(uicore.faTesterUi):
                 fwAppFiles.append(os.path.join(fwFolderPath, file))
                 caseTestResultMsg += "( TBD ) -- " + filename + "\n"
                 fwAppNames.append(filename)
+                fwAppPictures.append(os.path.join(fwFolderPath, filename + '.png'))
         self.fwAppFiles = fwAppFiles[:]
         self.fwAppNames = fwAppNames[:]
+        self.fwAppPictures = fwAppPictures[:]
         if len(fwAppFiles) == 0:
             self.showInfoMessage('App Error', 'Cannot find any test case files (.srec/.s19)')
         else:
@@ -178,6 +181,7 @@ class faTesterRun(uicore.faTesterUi):
         lastBeg = 0
         for appIdx in range(appLen):
             self.setButtonProperty("runTestCases", None, 'Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
+            self.setBoardPictureOnSize(self.fwAppPictures[appIdx])
             self.appendContentOnMainPrintWin('---------Case ' + str(appIdx+1) + '/' + str(appLen) + '----------\n')
             srecObj = bincopy.BinFile(str(self.fwAppFiles[appIdx]))
             filepath, file = os.path.split(self.fwAppFiles[appIdx])
@@ -263,6 +267,7 @@ class faTesterRun(uicore.faTesterUi):
                     ##############################################################
         self.setButtonProperty("runTestCases", uidef.kButtonColor_White, 'Run Test Cases')
         self.fwAppResults = fwAppResults[:]
+        self.setMcuBoardValue()
         #self.flushContentOnMainPrintWin()
 
     def _areAllTestCasesPassed(self):

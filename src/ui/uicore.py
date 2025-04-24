@@ -42,6 +42,7 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.initUi()
         self.fwAppFiles = []
         self.fwAppNames = []
+        self.fwAppPictures = []
         self.fwAppResults = []
         self.isLoadTestCasesTaskPending = False
         self.enableUartToRecvData = False
@@ -129,7 +130,7 @@ class faTesterUi(faTesterWin.faTesterWin):
                 NewW = int(H * W / H)
             img = wx.Image(boardPath, wx.BITMAP_TYPE_ANY)
             img = img.Scale(NewW, NewH)
-            self.m_bitmap_board.SetBitmap(wx.BitmapFromImage(img))
+            self.m_bitmap_board.SetBitmap(wx.Bitmap(img))
 
     def setMcuBoardValue( self ):
         self.mcuBoard = self.m_choice_mcuBoard.GetString(self.m_choice_mcuBoard.GetSelection())
