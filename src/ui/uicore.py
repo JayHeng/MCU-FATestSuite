@@ -50,7 +50,12 @@ class faTesterUi(faTesterWin.faTesterWin):
         self.caseResultLog = ""
         self.recvPrintBuf = ""
 
+    def on_boardSN_changed(self, event):
+        self.boardSN = self.m_textCtrl_boardSN.GetValue()
+        event.Skip()
+
     def initUi( self ):
+        self.m_textCtrl_boardSN.Bind(wx.EVT_TEXT, self.on_boardSN_changed)
         self.uartComPort = None
         self.uartBaudrate = None
         self.setPortSetupValue()
@@ -169,7 +174,7 @@ class faTesterUi(faTesterWin.faTesterWin):
             self.m_choice_mcuBoard.SetSelection(0)
 
     def updateBoardSN ( self ):
-        self.boardSN = self.m_textCtrl_boardSN.GetLineText(0)
+        self.boardSN = self.m_textCtrl_boardSN.GetValue()
         if len(self.boardSN) == 0:
             self.boardSN = "SNxxxxxxxx"
         else:
