@@ -53,7 +53,7 @@ kRevision_2_0_0_en =  "【v2.0.0】 \n" + \
                       "  Bugfix: \n" + \
                       "     1. Sometimes load app fail due to incorrect UART log decoding \n\n"
 
-kRevision_2_1_0_en =  "【v2.1.0】 \n" + \
+kRevision_3_0_0_en =  "【v3.0.0】 \n" + \
                       "  Feature: \n" + \
                       "     1. Support i.MXRT105x \n" + \
                       "     2. Support i.MXRT118x \n" + \
@@ -74,5 +74,5 @@ kMsgLanguageContentDict = {
         'revisionHistory_v1_2_0':             [kRevision_1_2_0_en],
         'revisionHistory_v1_3_0':             [kRevision_1_3_0_en],
         'revisionHistory_v2_0_0':             [kRevision_2_0_0_en],
-        'revisionHistory_v2_1_0':             [kRevision_2_1_0_en],
+        'revisionHistory_v3_0_0':             [kRevision_3_0_0_en],
 }

@@ -17,8 +17,8 @@ kMcuDevice_iMXRT1180 = 'MIMXRT1180'
 kMcuDevice_v1_0      = [kMcuDevice_iMXRT700]
 kMcuDevice_v1_3      = [kMcuDevice_iMXRT700, kMcuDevice_Custom]
 kMcuDevice_v2_0      = [kMcuDevice_iMXRT500, kMcuDevice_iMXRT700, kMcuDevice_iMXRT1060, kMcuDevice_Custom]
-kMcuDevice_v2_1      = [kMcuDevice_iMXRT500, kMcuDevice_iMXRT700, kMcuDevice_iMXRT1050, kMcuDevice_iMXRT1060, kMcuDevice_iMXRT1180, kMcuDevice_Custom]
-kMcuDevice_Latest    = kMcuDevice_v2_1
+kMcuDevice_v3_0      = [kMcuDevice_iMXRT500, kMcuDevice_iMXRT700, kMcuDevice_iMXRT1050, kMcuDevice_iMXRT1060, kMcuDevice_iMXRT1180, kMcuDevice_Custom]
+kMcuDevice_Latest    = kMcuDevice_v3_0
 
 kMcuBoard_Custom     = 'CustomBoard'
 kMcuBoardList_Custom     = [kMcuBoard_Custom]
