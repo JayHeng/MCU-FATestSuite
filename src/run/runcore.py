@@ -210,17 +210,24 @@ class faTesterRun(uicore.faTesterUi):
                             res2 = self.recvPrintBuf.find(self.tgt.fatLogFail, lastBeg)
                             if (res1 != -1):
                                 lastBeg = res1
-                                self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename)
-                                fwAppResults.append(rundef.kTestResult_RunPass)
                                 if delayTimeApp != 0:
-                                    self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
-                                    deltaTimeAppStart = time.perf_counter()
-                                    deltaTime_app = time.perf_counter() - deltaTimeAppStart
-                                    while (deltaTime_app < delayTimeApp):
-                                        deltaTime_app = time.perf_counter() - deltaTimeAppStart
-                                        time.sleep(1)
+                                    #self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename)
+                                    #fwAppResults.append(rundef.kTestResult_RunPass)
+                                    #self._flushTestResultLog(', <case delay ' + str(delayTimeApp) + 's>\n')
+                                    #deltaTimeAppStart = time.perf_counter()
+                                    #deltaTime_app = time.perf_counter() - deltaTimeAppStart
+                                    #while (deltaTime_app < delayTimeApp):
+                                    #    deltaTime_app = time.perf_counter() - deltaTimeAppStart
+                                    #    time.sleep(1)
+                                    if self.ask_pass_fail(filename):
+                                        self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename + '\n')
+                                        fwAppResults.append(rundef.kTestResult_RunPass)
+                                    else:
+                                        self._flushTestResultLog('( ' + rundef.kTestResult_RunFail + ' ) ' + filename + '\n')
+                                        fwAppResults.append(rundef.kTestResult_RunFail)
                                 else:
-                                    self._flushTestResultLog('\n')
+                                    self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename + '\n')
+                                    fwAppResults.append(rundef.kTestResult_RunPass)
                                 break
                             if (res2 != -1):
                                 lastBeg = res2

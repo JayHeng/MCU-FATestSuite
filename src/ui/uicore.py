@@ -255,3 +255,17 @@ class faTesterUi(faTesterWin.faTesterWin):
     def showInfoMessage( self, myTitle, myContent):
         wx.MessageBox(myContent, myTitle, wx.OK | wx.ICON_INFORMATION)
 
+    def ask_pass_fail( self, message="Test Case"):
+        dialog = wx.MessageDialog(
+            self,
+            'is <' + message + '> case working as expected?',
+            "Please Confirm",
+            style=wx.YES_NO | wx.ICON_QUESTION
+        )
+        dialog.SetYesNoLabels("YES", "NO")
+        try:
+            result = dialog.ShowModal()
+            return result == wx.ID_YES
+        finally:
+            dialog.Destroy()
+
