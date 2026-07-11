@@ -22,6 +22,9 @@ from ui import uidef
 from ui import uilang
 from boot import target
 
+s_passCases = 0
+s_totalCases = 0
+
 def execfile(filepath, globals=None, locals=None):
     if globals is None:
         globals = {}
@@ -161,6 +164,8 @@ class faTesterRun(uicore.faTesterUi):
         if appLen == 0:
             self.showInfoMessage('Flow Error', 'You need to detect test cases first.')
             return 
+        global s_totalCases
+        s_totalCases = appLen
         self.setButtonProperty("runTestCases", uidef.kButtonColor_Yellow)
         self.recvPrintBuf = ""
         self.caseResultLog = ""
@@ -179,6 +184,8 @@ class faTesterRun(uicore.faTesterUi):
         self._debugger.open()
         #print('Created JLink debugger object\r\n')
         lastBeg = 0
+        global s_passCases
+        s_passCases = 0
         for appIdx in range(appLen):
             self.setButtonProperty("runTestCases", None, 'Running Test Case ' + str(appIdx+1) + '/' + str(appLen))
             self.setBoardPictureOnSize(self.fwAppPictures[appIdx])
@@ -221,12 +228,14 @@ class faTesterRun(uicore.faTesterUi):
                                     #    time.sleep(1)
                                     if self.ask_pass_fail(filename):
                                         self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename + '\n')
+                                        s_passCases += 1
                                         fwAppResults.append(rundef.kTestResult_RunPass)
                                     else:
                                         self._flushTestResultLog('( ' + rundef.kTestResult_RunFail + ' ) ' + filename + '\n')
                                         fwAppResults.append(rundef.kTestResult_RunFail)
                                 else:
                                     self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename + '\n')
+                                    s_passCases += 1
                                     fwAppResults.append(rundef.kTestResult_RunPass)
                                 break
                             if (res2 != -1):
@@ -252,6 +261,7 @@ class faTesterRun(uicore.faTesterUi):
                                 resx = resx >> 24
                                 if resx == self.tgt.fatRegPass:
                                     self._flushTestResultLog('( ' + rundef.kTestResult_RunPass + ' ) ' + filename + '\n')
+                                    s_passCases += 1
                                     fwAppResults.append(rundef.kTestResult_RunPass)
                                     break
                                 elif resx == self.tgt.fatRegFail:
@@ -317,6 +327,6 @@ class faTesterRun(uicore.faTesterUi):
                 reportName = os.path.join(self.exeTopRoot, 'report', finalResult + "_test_report_" + self.mcuDevice + "_" + self.mcuBoard + "_" + self.boardSN + "_" + time.strftime('%Y-%m-%d_%H.%M.%S',time.localtime(time.time())))
                 self._saveTestResultToText(reportName)
                 self._saveTestResultToExcel(reportName)
-                self._flushTestResultLog('\r\nDONE')
+                self._flushTestResultLog('\r\nDONE， pass rate='+str(s_passCases)+'/'+str(s_totalCases))
                 self.isLoadTestCasesTaskPending = False
             time.sleep(1)
