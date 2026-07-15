@@ -1,7 +1,7 @@
 # MCU-FATestSuite
 A flexible FAT tool based on Python3.11+wxPython4.2.1, it can do flexible FA tests for NXP MCU (i.MXRT...) | 恩智浦MCU板卡出厂验收测试(FAT)一站式工具 
 
-![](/doc/tool_v2.1_view.png)
+![](/doc/tool_v3.0_view.png)
 
 ### 1. 使用步骤
 ```text
@@ -14,6 +14,8 @@ A flexible FAT tool based on Python3.11+wxPython4.2.1, it can do flexible FA tes
   - 程序开始需打印输出 PRINTF("\r\n FAT FW Start\r\n");
   - 程序结束需打印输出 PRINTF("\r\n FAT FW Pass\r\n"); 或者 PRINTF("\r\n FAT FW Fail\r\n");
   - 程序结束如需额外延时可打印输出 PRINTF("\r\n FAT FW Start DelayTime=10s\r\n");
+    - V1.0 - V2.0上位机端直接软件延时，然后直接认定测试结果为 PASS
+    - V3.0 开始在上位机端改为弹窗让用户选择 YES 或者 NO 即接受手动输入测试结果
 4. 在 'Board SN' 里写入当前板卡唯一识别号
 5. 点击 'Detect Test Cases' 按钮扫描测试程序
  

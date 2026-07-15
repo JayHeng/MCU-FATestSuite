@@ -58,7 +58,10 @@ kRevision_3_0_0_en =  "【v3.0.0】 \n" + \
                       "     1. Support i.MXRT105x \n" + \
                       "     2. Support i.MXRT118x \n" + \
                       "  Improvement: \n" + \
-                      "     1. Save test result into excel file as well \n\n"
+                      "     1. Pop Dialog to get run result for those cases with delay \n" + \
+                      "     2. Save test result into excel file as well \n" + \
+                      "  Bugfix: \n" + \
+                      "     1. Cannot get correct board SN \n\n"
 
 kMsgLanguageContentDict = {
         'homePage_title':                     ['Home Page'],
